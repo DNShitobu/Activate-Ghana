@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payments & Payouts | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .card { background:#ffffff; border:1px solid #e2e8f0; box-shadow:0 10px 30px rgba(15,23,42,0.08); }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <header class="flex items-center justify-between">
+      <a href="index.html" class="text-sm font-semibold text-primary hover:text-primary-dark">← Back to home</a>
+      <div class="flex gap-2 text-sm font-semibold">
+        <a href="dashboard.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Client dashboard</a>
+        <a href="dashboard-expert.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Expert dashboard</a>
+      </div>
+    </header>
+
+    <section class="grid lg:grid-cols-2 gap-4">
+      <div class="card rounded-2xl p-6 space-y-3">
+        <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Funding</p>
+        <h1 class="text-xl font-bold">Fund escrow</h1>
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-slate-700">Amount (GHS)</label>
+          <input class="w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="1000">
+        </div>
+        <div class="grid md:grid-cols-2 gap-3">
+          <button class="px-4 py-3 rounded-lg bg-primary text-white font-semibold">Mobile Money</button>
+          <button class="px-4 py-3 rounded-lg border border-slate-300 font-semibold">Card / Bank</button>
+        </div>
+        <div class="space-y-2">
+          <p class="text-sm font-semibold text-slate-700">Fees</p>
+          <p class="text-xs text-slate-500">Platform fee: 5%, MoMo fee: 1.2%, Card fee: 2.5%.</p>
+        </div>
+        <p class="text-xs text-slate-500">Escrow auto-releases after approval or timer; disputes freeze funds.</p>
+      </div>
+
+      <div class="card rounded-2xl p-6 space-y-3">
+        <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Payouts</p>
+        <h2 class="text-lg font-semibold">Withdraw earnings</h2>
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-slate-700">Destination</label>
+          <select class="w-full rounded-xl border border-slate-300 px-4 py-3">
+            <option>MTN MoMo</option>
+            <option>Vodafone Cash</option>
+            <option>Bank account</option>
+          </select>
+        </div>
+        <input class="w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="Amount (GHS)">
+        <button class="px-4 py-3 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-500 transition">Request payout</button>
+        <p class="text-xs text-slate-500">Tracking: pending → processing → paid. Receipts stored for audit.</p>
+      </div>
+    </section>
+
+    <section class="card rounded-2xl p-6 space-y-3">
+      <div class="flex items-center justify-between">
+        <p class="text-lg font-semibold">Payout history</p>
+        <button class="px-3 py-2 rounded-lg border border-slate-200 text-sm font-semibold">Download receipt</button>
+      </div>
+      <div class="overflow-auto">
+        <table class="min-w-full text-sm text-slate-700">
+          <thead class="text-left text-slate-500">
+            <tr>
+              <th class="px-3 py-2">Date</th>
+              <th class="px-3 py-2">Method</th>
+              <th class="px-3 py-2">Amount</th>
+              <th class="px-3 py-2">Fees</th>
+              <th class="px-3 py-2">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="px-3 py-2">2026-02-01</td>
+              <td class="px-3 py-2">MoMo</td>
+              <td class="px-3 py-2">GHS 1,200</td>
+              <td class="px-3 py-2">GHS 12</td>
+              <td class="px-3 py-2 text-emerald-700">Paid</td>
+            </tr>
+            <tr class="border-b">
+              <td class="px-3 py-2">2026-01-28</td>
+              <td class="px-3 py-2">Bank</td>
+              <td class="px-3 py-2">GHS 3,500</td>
+              <td class="px-3 py-2">GHS 35</td>
+              <td class="px-3 py-2 text-amber-700">Processing</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
+
+

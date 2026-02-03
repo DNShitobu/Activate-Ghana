@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>In‑App Chat | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#F68B1F', light: '#F6B01E', dark: '#F55203' },
+            accent: '#313131',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background:#F5F5F5; color:#313131; }
+    .card { background:#ffffff; border:1px solid #e5e5e5; box-shadow:0 10px 30px rgba(0,0,0,0.06); }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <header class="flex items-center justify-between">
+      <a href="index.html" class="text-sm font-semibold text-accent">Home</a>
+      <div class="flex items-center gap-2 text-sm font-semibold">
+        <a href="marketplace.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Marketplace</a>
+        <a href="dashboard.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Dashboard</a>
+        <a href="login.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Log out</a>
+      </div>
+    </header>
+
+    <section class="grid lg:grid-cols-12 gap-4">
+      <aside class="card rounded-2xl p-4 lg:col-span-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h1 class="text-lg font-semibold">Messages</h1>
+          <button id="new-chat" class="px-3 py-2 rounded-lg bg-primary text-white text-sm font-semibold">New chat</button>
+        </div>
+        <div id="chat-threads" class="space-y-2"></div>
+      </aside>
+
+      <main class="card rounded-2xl p-4 lg:col-span-8 flex flex-col h-[70vh]">
+        <div class="flex items-center justify-between border-b pb-3 mb-3">
+          <div>
+            <p class="text-sm text-slate-500">Conversation</p>
+            <h2 id="chat-title" class="text-lg font-semibold">Select a chat</h2>
+          </div>
+          <div class="text-xs text-slate-500" id="chat-meta"></div>
+        </div>
+        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3"></div>
+        <form id="chat-form" class="pt-3 border-t mt-3 flex gap-2">
+          <input id="chat-input" class="flex-1 rounded-lg border border-slate-300 px-3 py-2" placeholder="Type a message">
+          <button class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">Send</button>
+        </form>
+      </main>
+    </section>
+  </div>
+  <script>
+    if (!localStorage.getItem('jwt_access')) {
+      window.location.href = 'login.html';
+    }
+  </script>
+  <script src="scripts.js"></script>
+</body>
+</html>

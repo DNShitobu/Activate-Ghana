@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expert Dashboard | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#F68B1F', light: '#F6B01E', dark: '#F55203' },
+            accent: '#313131',
+            pop: { pink: '#F68B1F', lime: '#F6B01E', amber: '#F6B01E', violet: '#F55203' },
+            night: '#313131',
+            panel: '#F5F5F5',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: #F5F5F5;
+      color: #313131;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <!-- Top bar -->
+    <header class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-full bg-emerald-600 text-white font-bold grid place-items-center">S</div>
+        <div>
+          <p class="text-lg font-semibold">Welcome back, <span data-user-name>Expert</span>!</p>
+          <p class="text-sm text-slate-500"><span data-user-role>Expert</span> Dashboard</p>
+        </div>
+      </div>
+      <div class="ml-auto flex flex-wrap items-center justify-end gap-2 text-sm font-semibold">
+        <a href="dashboard.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Client view</a>
+        <a href="profile.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Edit profile</a>
+        <a href="chat.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Chat</a>
+        <a href="login.html" class="px-3 py-2 rounded-lg bg-primary text-white hover:bg-primary-dark transition">Log Out</a>
+      </div>
+    </header>
+
+    <!-- Profile completeness -->
+    <section class="card rounded-2xl p-5 border-amber-200">
+      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p class="text-sm text-slate-600">A complete profile helps clients find and trust you. Add more details to get hired faster.</p>
+        </div>
+        <a href="profile.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-400 text-slate-900 font-semibold hover:bg-amber-300 transition">
+          Complete Profile
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="mt-3">
+        <div class="h-2 rounded-full bg-amber-100 overflow-hidden">
+          <div class="h-full w-1/4 bg-amber-400"></div>
+        </div>
+        <p class="text-xs text-slate-500 mt-1">25% complete (demo)</p>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="grid sm:grid-cols-3 gap-4">
+      <div class="card rounded-2xl p-4 space-y-2">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-emerald-100 grid place-items-center text-emerald-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 6h6m-8 4h10m-5 0v2.5m-7 1.75V10a2 2 0 012-2h10a2 2 0 012 2v4.25A2.75 2.75 0 0116.25 17H7.75A2.75 2.75 0 015 14.25Z"/></svg>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-wide text-slate-500">Active Contracts</p>
+            <p class="text-2xl font-semibold">0</p>
+          </div>
+        </div>
+      </div>
+      <div class="card rounded-2xl p-4 space-y-2">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-emerald-50 grid place-items-center text-emerald-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v12m6-6H6"/></svg>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-wide text-slate-500">Total Earnings</p>
+            <p class="text-2xl font-semibold">GHS 0</p>
+          </div>
+        </div>
+      </div>
+      <div class="card rounded-2xl p-4 space-y-2">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-amber-50 grid place-items-center text-amber-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.902 20.54a.562.562 0 01-.84-.61l1.285-5.385a.562.562 0 00-.182-.557L2.96 10.385a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345l2.206-5.111z"/></svg>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-wide text-slate-500">Rating</p>
+            <p class="text-2xl font-semibold">—</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Actions -->
+    <section class="grid md:grid-cols-3 gap-4">
+      <a href="marketplace.html#jobs" class="card rounded-2xl p-5 flex items-center justify-between hover:border-primary transition">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 grid place-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.5 6a4.5 4.5 0 100 9 4.5 4.5 0 000-9zM21 21l-5.197-5.197"/></svg>
+          </div>
+          <div>
+            <p class="font-semibold">Browse Jobs</p>
+            <p class="text-sm text-slate-500">Find work that matches your skills</p>
+          </div>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a href="profile.html" class="card rounded-2xl p-5 flex items-center justify-between hover:border-primary transition">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 grid place-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 7a5 5 0 11-10 0 5 5 0 0110 0zM12 12a8 8 0 00-8 8h16a8 8 0 00-8-8z"/></svg>
+          </div>
+          <div>
+            <p class="font-semibold">Edit Profile</p>
+            <p class="text-sm text-slate-500">Complete your expert profile</p>
+          </div>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a href="profile.html#product-store" class="card rounded-2xl p-5 flex items-center justify-between hover:border-amber-300 transition">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 grid place-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7h16M4 11h16M4 15h10"/></svg>
+          </div>
+          <div>
+            <p class="font-semibold">Sell Products</p>
+            <p class="text-sm text-slate-500">List farm products or inputs</p>
+          </div>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
+      </a>
+    </section>
+
+    <!-- Escrow timeline -->
+    <section class="card rounded-2xl p-6 space-y-3">
+      <div class="flex items-center justify-between">
+        <p class="text-lg font-semibold">Escrow & milestones</p>
+        <a href="dispute-center.html" class="text-sm text-amber-600 hover:text-amber-500">Raise dispute</a>
+      </div>
+      <div class="grid md:grid-cols-3 gap-3 text-sm">
+        <div class="rounded-xl border border-slate-200 p-3">
+          <p class="text-slate-500">Current state</p>
+          <p class="font-semibold">In review</p>
+        </div>
+        <div class="rounded-xl border border-slate-200 p-3">
+          <p class="text-slate-500">Next auto-release</p>
+          <p class="font-semibold">2d 18h</p>
+        </div>
+        <div class="rounded-xl border border-slate-200 p-3">
+          <p class="text-slate-500">Admin actions</p>
+          <p class="font-semibold">freeze | split | refund | release</p>
+        </div>
+      </div>
+      <ul class="text-sm text-slate-600 space-y-1">
+        <li>• Milestone 1 — submitted, awaiting client approval</li>
+        <li>• Milestone 2 — pending materials confirmation</li>
+      </ul>
+    </section>
+
+    <!-- Opportunities -->
+    <section class="card rounded-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-slate-500">Job Opportunities</p>
+          <p class="text-xl font-semibold">Matches based on your skills</p>
+        </div>
+        <a href="#" class="px-3 py-2 rounded-lg border border-slate-200 text-sm font-semibold hover:bg-slate-50 transition">View all</a>
+      </div>
+      <div class="grid md:grid-cols-2 gap-3">
+        <div class="rounded-xl border border-slate-200 p-4 space-y-2">
+          <p class="text-sm text-slate-500">Electrician · Accra</p>
+          <p class="font-semibold">Solar changeover for 4-bedroom home</p>
+          <p class="text-sm text-slate-500">Budget: GHS 6,200 · Applications open</p>
+        </div>
+        <div class="rounded-xl border border-slate-200 p-4 space-y-2">
+          <p class="text-sm text-slate-500">CCTV · Kumasi</p>
+          <p class="font-semibold">Install 8-camera system with remote view</p>
+          <p class="text-sm text-slate-500">Budget: GHS 3,400 · Shortlisting</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+    if (!localStorage.getItem('jwt_access')) {
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>
+
+
+

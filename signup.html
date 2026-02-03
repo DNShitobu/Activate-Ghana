@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign up | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#F68B1F', light: '#F6B01E', dark: '#F55203' },
+            accent: '#313131',
+            pop: { pink: '#F68B1F', lime: '#F6B01E', amber: '#F6B01E', violet: '#F55203' },
+            night: '#313131',
+            panel: '#F5F5F5',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: #F5F5F5;
+      color: #313131;
+    }
+    .glass {
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      box-shadow: 0 18px 70px rgba(0,0,0,0.08);
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      box-shadow: 0 14px 48px rgba(0,0,0,0.08);
+    }
+    .glow-ring {
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 0 28px rgba(34,211,238,0.35);
+    }
+  </style>
+</head>
+<body class="text-slate-900 antialiased">
+  <div class="max-w-5xl mx-auto px-4 py-8 space-y-6 min-h-screen flex flex-col">
+    <header class="flex flex-wrap items-center justify-between gap-3">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-light via-pop-amber to-pop-pink grid place-items-center font-extrabold text-night shadow-lg">GH</div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-600">ACTIVATE Skills and Service</p>
+          <p class="font-semibold text-lg">Marketplace | Ghana</p>
+        </div>
+      </a>
+      <div class="ml-auto flex flex-wrap items-center justify-end gap-2 text-sm font-semibold">
+        <a href="index.html" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition">Home</a>
+        <a href="login.html" class="px-3 py-2 rounded-lg border border-slate-600 hover:border-primary transition">Log in</a>
+      </div>
+    </header>
+
+    <div class="grid lg:grid-cols-2 gap-6 items-stretch flex-1">
+      <div class="glass rounded-3xl p-6 glow-ring space-y-5">
+        <div class="space-y-1">
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-600">Create account</p>
+          <h1 class="text-2xl font-bold">Join as a client or expert</h1>
+          <p class="text-sm text-slate-600">Escrow-backed payments, verified IDs, and dispute resolution come standard.</p>
+        </div>
+        <div class="space-y-3">
+          <button id="google-signup" type="button" class="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 bg-white/90 text-slate-900 font-semibold hover:bg-white transition">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="" class="w-5 h-5"> Continue with Google
+          </button>
+          <button id="linkedin-signup" type="button" class="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 bg-[#0a66c2] text-white font-semibold hover:brightness-110 transition">
+            <img src="https://www.svgrepo.com/show/448234/linkedin.svg" alt="" class="w-5 h-5"> Continue with LinkedIn
+          </button>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-slate-600">
+          <div class="h-px flex-1 bg-white/20"></div>
+          <span>Or sign up with email / phone</span>
+          <div class="h-px flex-1 bg-white/20"></div>
+        </div>
+        <form class="space-y-4" id="signup-form">
+          <div class="space-y-2">
+            <label class="text-sm text-slate-700" for="signup-name">Full name</label>
+            <input id="signup-name" name="name" required class="w-full rounded-xl px-4 py-3 bg-white border border-slate-300 focus:outline-none focus:border-primary" placeholder="e.g. Ama Boateng">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm text-slate-700" for="signup-contact">Phone or email</label>
+            <input id="signup-contact" name="contact" required class="w-full rounded-xl px-4 py-3 bg-white border border-slate-300 focus:outline-none focus:border-primary" placeholder="0244... or me@example.com">
+          </div>
+          <div class="grid md:grid-cols-2 gap-3">
+            <div class="space-y-2">
+              <label class="text-sm text-slate-700" for="signup-password">Password</label>
+              <div class="relative">
+                <input id="signup-password" name="password" type="password" required class="w-full rounded-xl px-4 py-3 bg-white border border-slate-300 focus:outline-none focus:border-primary pr-12" placeholder="Choose a password">
+                <button type="button" class="absolute inset-y-0 right-3 my-auto text-slate-600 hover:text-white text-sm" data-toggle-password="signup-password">Show</button>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm text-slate-700" for="signup-confirm">Confirm password</label>
+              <div class="relative">
+                <input id="signup-confirm" name="confirm" type="password" required class="w-full rounded-xl px-4 py-3 bg-white border border-slate-300 focus:outline-none focus:border-primary pr-12" placeholder="Repeat password">
+                <button type="button" class="absolute inset-y-0 right-3 my-auto text-slate-600 hover:text-white text-sm" data-toggle-password="signup-confirm">Show</button>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm text-slate-700" for="signup-role">I want to</label>
+            <select id="signup-role" name="role" class="w-full rounded-xl px-4 py-3 bg-white border border-slate-300 focus:outline-none focus:border-primary">
+              <option>Hire for a job (client)</option>
+              <option>Offer my services (expert)</option>
+            </select>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-2">
+            <button type="submit" data-role="client" class="w-full rounded-xl px-4 py-3 bg-gradient-to-r from-primary via-pop-amber to-pop-pink text-night font-semibold hover:from-primary-light transition">Sign up as client</button>
+            <button type="submit" data-role="expert" class="w-full rounded-xl px-4 py-3 border border-slate-300 rounded-xl bg-slate-900/60 text-white font-semibold hover:border-primary transition">Sign up as expert</button>
+          </div>
+        </form>
+        <p class="text-sm text-slate-600">Already registered? <a href="login.html" class="text-primary-light hover:text-white">Log in here</a></p>
+        <p class="text-xs text-slate-500">Admins can <a href="admin-login.html" class="text-amber-300 hover:text-white font-semibold">sign in here</a>.</p>
+      </div>
+
+      <div class="card rounded-3xl overflow-hidden glow-ring relative">
+        <img src="/images/IMG_6281.jpg" alt="Expert happing starting something new" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/75 to-black/10"></div>
+        <div class="absolute bottom-6 left-6 right-6 space-y-2">
+          <span class="px-3 py-1 rounded-full border border-white/30 bg-slate-100 text-xs font-semibold">Verified IDs | Escrow protected</span>
+          <p class="text-lg font-semibold">Track milestones and release payouts confidently</p>
+          <p class="text-sm text-slate-700">Add your service areas, badges, and portfolio to stand out to Ghanaian clients.</p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-xs text-slate-500">
+      Demo signup page. Hook this form to the Django API to enable real accounts.
+    </footer>
+  </div>
+</body>
+<script src="auth.js"></script>
+</html>
+
+
+
+
+
+

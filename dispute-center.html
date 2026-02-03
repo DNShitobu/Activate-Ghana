@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dispute Center | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .card { background:#ffffff; border:1px solid #e2e8f0; box-shadow:0 10px 30px rgba(15,23,42,0.08); }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <header class="flex items-center justify-between">
+      <a href="index.html" class="text-sm font-semibold text-primary hover:text-primary-dark">← Back to home</a>
+      <div class="flex gap-2 text-sm font-semibold">
+        <a href="dashboard.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Client dashboard</a>
+        <a href="dashboard-expert.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Expert dashboard</a>
+      </div>
+    </header>
+
+    <section class="card rounded-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Disputes</p>
+          <h1 class="text-xl font-bold">Open cases</h1>
+        </div>
+        <button class="px-3 py-2 rounded-lg bg-amber-400 text-slate-900 font-semibold hover:bg-amber-300 transition">Raise dispute</button>
+      </div>
+      <div class="grid md:grid-cols-2 gap-3" id="dispute-cards">
+        <article class="rounded-2xl border border-slate-200 p-4 space-y-2">
+          <div class="flex items-center justify-between text-sm">
+            <span class="px-2 py-1 rounded-lg bg-amber-100 text-amber-700">Under review</span>
+            <span class="text-slate-500">#D-1042</span>
+          </div>
+          <p class="font-semibold">Tile quality vs spec</p>
+          <p class="text-sm text-slate-500">Amount: GHS 3,200 · Action: freeze_wallet</p>
+          <p class="text-xs text-slate-400">Admin: Awaiting evidence</p>
+        </article>
+        <article class="rounded-2xl border border-slate-200 p-4 space-y-2">
+          <div class="flex items-center justify-between text-sm">
+            <span class="px-2 py-1 rounded-lg bg-emerald-100 text-emerald-700">Resolved</span>
+            <span class="text-slate-500">#D-1038</span>
+          </div>
+          <p class="font-semibold">Delayed rewiring</p>
+          <p class="text-sm text-slate-500">Amount: GHS 2,450 · Action: split_funds</p>
+          <p class="text-xs text-slate-400">Outcome: 60/40 split</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card rounded-2xl p-6 space-y-3">
+      <div class="flex items-center justify-between">
+        <p class="text-lg font-semibold">Timeline & evidence</p>
+        <button class="px-3 py-2 rounded-lg border border-slate-200 text-sm font-semibold hover:bg-slate-50 transition">Upload evidence</button>
+      </div>
+      <ol class="space-y-3 text-sm text-slate-600">
+        <li><strong>Client</strong> submitted dispute · 2026-02-01</li>
+        <li><strong>Admin</strong> requested photos of tiles · 2026-02-02</li>
+        <li><strong>Expert</strong> uploaded receipts · 2026-02-03</li>
+      </ol>
+    </section>
+
+    <section class="card rounded-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <p class="text-lg font-semibold">Mediation chat</p>
+        <span class="px-2 py-1 rounded-lg bg-emerald-100 text-emerald-700 text-xs font-semibold">Secure</span>
+      </div>
+      <div class="h-64 rounded-2xl border border-slate-200 p-3 overflow-y-auto space-y-3 bg-slate-50" id="mediation-chat">
+        <div class="flex gap-2">
+          <div class="w-8 h-8 rounded-full bg-primary text-white grid place-items-center text-xs font-bold">CL</div>
+          <div class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm">Requesting refund for tiles that chipped.</div>
+        </div>
+        <div class="flex gap-2 justify-end">
+          <div class="bg-primary text-white rounded-xl px-3 py-2 text-sm">Can replace within 3 days.</div>
+          <div class="w-8 h-8 rounded-full bg-emerald-600 text-white grid place-items-center text-xs font-bold">EX</div>
+        </div>
+        <div class="flex gap-2">
+          <div class="w-8 h-8 rounded-full bg-amber-500 text-white grid place-items-center text-xs font-bold">AD</div>
+          <div class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm">Proposed: split funds 60/40, replace tiles in 3 days.</div>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <input class="flex-1 rounded-xl border border-slate-300 px-4 py-3" placeholder="Send a mediation message">
+        <button class="px-4 py-3 rounded-xl bg-primary text-white font-semibold">Send</button>
+      </div>
+    </section>
+
+    <section class="card rounded-2xl p-6 space-y-3">
+      <div class="flex items-center justify-between">
+        <p class="text-lg font-semibold">Resolution outcome</p>
+        <span class="px-2 py-1 rounded-lg bg-amber-100 text-amber-700 text-xs font-semibold">Pending</span>
+      </div>
+      <ul class="text-sm text-slate-600 space-y-1">
+        <li>• Proposed: split_funds 60/40</li>
+        <li>• Replace damaged tiles by: 2026-02-06</li>
+        <li>• Auto-release paused until: 2026-02-07</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>
+
+

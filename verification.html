@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verification & Badges | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .card { background:#ffffff; border:1px solid #e2e8f0; box-shadow:0 10px 30px rgba(15,23,42,0.08); }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="max-w-4xl mx-auto px-4 py-8 space-y-6">
+    <header class="flex items-center justify-between">
+      <a href="index.html" class="text-sm font-semibold text-primary hover:text-primary-dark">← Back to home</a>
+      <div class="flex gap-2 text-sm font-semibold">
+        <a href="dashboard-expert.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Expert dashboard</a>
+      </div>
+    </header>
+
+    <section class="card rounded-2xl p-6 space-y-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Verification</p>
+        <h1 class="text-xl font-bold">Earn badges</h1>
+      </div>
+      <form class="space-y-4">
+        <div class="grid md:grid-cols-2 gap-3">
+          <label class="space-y-2 text-sm font-semibold text-slate-700">
+            National ID (Ghana Card)
+            <input type="file" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+          </label>
+          <label class="space-y-2 text-sm font-semibold text-slate-700">
+            Trade license / cert
+            <input type="file" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+          </label>
+        </div>
+        <label class="space-y-2 text-sm font-semibold text-slate-700">
+          Selfie with ID
+          <input type="file" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+        </label>
+        <div class="grid md:grid-cols-3 gap-3">
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox"> ID verified</label>
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox"> Trade license</label>
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox"> Background check</label>
+        </div>
+        <button class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">Submit for review</button>
+        <div class="grid md:grid-cols-3 gap-2 text-sm">
+          <span class="px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 font-semibold">ID verified</span>
+          <span class="px-3 py-2 rounded-lg bg-amber-50 text-amber-700 font-semibold">Trade license pending</span>
+          <span class="px-3 py-2 rounded-lg bg-slate-100 text-slate-700 font-semibold">Background check</span>
+        </div>
+      </form>
+    </section>
+  </div>
+</body>
+</html>
+
+

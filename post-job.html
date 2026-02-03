@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post a Job | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .card { background:#ffffff; border:1px solid #e2e8f0; box-shadow:0 10px 30px rgba(15,23,42,0.08); }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+    <header class="flex items-center justify-between">
+      <a href="index.html" class="text-sm font-semibold text-primary hover:text-primary-dark">← Back to home</a>
+      <a href="dashboard.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition text-sm font-semibold">Go to dashboard</a>
+    </header>
+
+    <section class="card rounded-2xl p-6 space-y-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-slate-500">New job</p>
+        <h1 class="text-xl font-bold">Structured job brief</h1>
+      </div>
+      <form class="space-y-4">
+        <input class="w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="Job title">
+        <textarea class="w-full rounded-xl border border-slate-300 px-4 py-3" rows="4" placeholder="Describe scope, deliverables, constraints"></textarea>
+        <div class="grid md:grid-cols-3 gap-3">
+          <input class="rounded-xl border border-slate-300 px-4 py-3" placeholder="Budget (GHS)">
+          <input class="rounded-xl border border-slate-300 px-4 py-3" placeholder="Timeline (days)">
+          <select class="rounded-xl border border-slate-300 px-4 py-3">
+            <option>Fixed price</option>
+            <option>Hourly</option>
+          </select>
+        </div>
+        <div class="grid md:grid-cols-2 gap-3">
+          <label class="space-y-2 text-sm font-semibold text-slate-700">
+            Attach files
+            <input type="file" class="w-full rounded-xl border border-slate-300 px-4 py-3" multiple>
+          </label>
+          <label class="space-y-2 text-sm font-semibold text-slate-700">
+            Location
+            <input class="w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="City / area">
+          </label>
+        </div>
+        <div class="space-y-2">
+          <p class="text-sm font-semibold text-slate-700">Templates</p>
+          <div class="grid md:grid-cols-3 gap-2 text-sm">
+            <button class="rounded-xl border border-slate-200 px-3 py-2 hover:bg-slate-50" type="button">Electrical wiring</button>
+            <button class="rounded-xl border border-slate-200 px-3 py-2 hover:bg-slate-50" type="button">Plumbing fix</button>
+            <button class="rounded-xl border border-slate-200 px-3 py-2 hover:bg-slate-50" type="button">Tailoring order</button>
+          </div>
+          <div class="space-y-2">
+            <p class="text-sm font-semibold text-slate-700">Milestones</p>
+            <div class="rounded-xl border border-slate-200 p-3 space-y-2">
+              <div class="grid md:grid-cols-3 gap-2">
+                <input class="rounded-lg border border-slate-200 px-3 py-2" placeholder="Milestone title">
+                <input class="rounded-lg border border-slate-200 px-3 py-2" placeholder="Amount (GHS)">
+                <input class="rounded-lg border border-slate-200 px-3 py-2" placeholder="Due (days)">
+              </div>
+              <button type="button" class="text-sm text-primary font-semibold">+ Add milestone</button>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">Submit job</button>
+          <button type="button" class="px-4 py-2 rounded-lg border border-slate-300 font-semibold">Save draft</button>
+        </div>
+      </form>
+    </section>
+  </div>
+</body>
+</html>
+
+

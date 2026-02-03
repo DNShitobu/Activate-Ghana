@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://example.com/</loc></url>
+  <url><loc>https://example.com/login.html</loc></url>
+  <url><loc>https://example.com/signup.html</loc></url>
+  <url><loc>https://example.com/marketplace.html</loc></url>
+  <url><loc>https://example.com/dashboard.html</loc></url>
+  <url><loc>https://example.com/dashboard-expert.html</loc></url>
+  <url><loc>https://example.com/proposals.html</loc></url>
+  <url><loc>https://example.com/dispute-center.html</loc></url>
+  <url><loc>https://example.com/payments.html</loc></url>
+  <url><loc>https://example.com/verification.html</loc></url>
+  <url><loc>https://example.com/products.html</loc></url>
+  <url><loc>https://example.com/product-detail.html</loc></url>
+  <url><loc>https://example.com/seller-profile.html</loc></url>
+  <url><loc>https://example.com/help-center.html</loc></url>
+</urlset>

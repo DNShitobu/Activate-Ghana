@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#F68B1F', light: '#F6B01E', dark: '#F55203' },
+            accent: '#313131',
+            pop: { pink: '#F68B1F', lime: '#F6B01E', amber: '#F6B01E', violet: '#F55203' },
+            night: '#313131',
+            panel: '#F5F5F5',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+    <header class="flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-light via-pop-amber to-pop-pink grid place-items-center font-extrabold text-night shadow-lg">GH</div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">ACTIVATE Skills and Service</p>
+          <p class="font-semibold text-lg">Marketplace | Ghana</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-2 text-sm font-semibold">
+        <a href="index.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Home</a>
+        <a href="marketplace.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Marketplace</a>
+        <a href="dashboard.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Dashboard</a>
+        <a href="dashboard-expert.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Expert</a>
+        <a href="login.html" class="px-3 py-2 rounded-lg bg-primary text-white hover:bg-primary-dark transition">Log out</a>
+      </div>
+    </header>
+
+    <div class="card rounded-2xl p-6 space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Profile</p>
+          <h1 class="text-2xl font-bold">Tell clients about yourself</h1>
+          <p class="text-sm text-slate-600">Add a photo, your experience, and how to reach you.</p>
+        </div>
+        <div class="text-right">
+          <p class="text-xs text-slate-500">Profile completeness</p>
+          <div class="w-40 h-2 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full w-2/5 bg-primary"></div>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">40% (demo)</p>
+        </div>
+      </div>
+
+      <form class="grid gap-4" action="dashboard-expert.html" method="get">
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="md:col-span-1 space-y-2">
+            <label class="text-sm font-semibold text-slate-700">Profile photo</label>
+            <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center space-y-2">
+              <div class="w-20 h-20 mx-auto rounded-full bg-slate-200 grid place-items-center text-slate-500 text-sm">Photo</div>
+              <label class="cursor-pointer text-sm font-semibold text-primary hover:text-primary-dark">
+                Upload image
+                <input type="file" accept="image/*" class="hidden">
+              </label>
+              <p class="text-xs text-slate-500">PNG or JPG up to 2MB.</p>
+            </div>
+          </div>
+          <div class="md:col-span-2 space-y-3">
+            <label class="text-sm font-semibold text-slate-700" for="profile-headline">Headline</label>
+            <input id="profile-headline" name="headline" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Licensed electrician | Solar and backup systems">
+            <label class="text-sm font-semibold text-slate-700" for="profile-description">Description</label>
+            <textarea id="profile-description" name="description" rows="4" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Describe your services, years of experience, certifications, and tools."></textarea>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-700" for="experience">Key experience</label>
+            <textarea id="experience" name="experience" rows="3" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Example: 6 years wiring homes, 40kVA solar installs, ECGB certified."></textarea>
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-700" for="skills">Core skills / tags</label>
+            <input id="skills" name="skills" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Electrician, Solar, Backup power, CCTV">
+            <p class="text-xs text-slate-500">Separate with commas.</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <p class="text-sm font-semibold text-slate-700">Portfolio gallery</p>
+            <div class="grid grid-cols-3 gap-2">
+              <div class="aspect-square rounded-xl bg-slate-100 border border-slate-200"></div>
+              <div class="aspect-square rounded-xl bg-slate-100 border border-slate-200"></div>
+              <div class="aspect-square rounded-xl bg-slate-100 border border-slate-200"></div>
+            </div>
+            <input type="file" multiple class="w-full rounded-xl border border-slate-300 px-4 py-3">
+          </div>
+          <div class="space-y-2">
+            <p class="text-sm font-semibold text-slate-700">Typical pricing band</p>
+            <input class="w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="e.g. GHS 300 - 1,200 per job">
+            <p class="text-sm font-semibold text-slate-700">Certifications / badges</p>
+            <input class="w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="e.g. ECGB licensed, OSHA 30">
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-700" for="location">Location</label>
+            <input id="location" name="location" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Accra - Madina">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-700" for="phone">Phone</label>
+            <input id="phone" name="phone" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="050 000 0000">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-700" for="email">Email</label>
+            <input id="email" name="email" type="email" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="me@example.com">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-slate-600">Saving updates is demo-only. In production connect this form to your API.</p>
+          <div class="flex gap-2">
+            <a href="dashboard-expert.html" class="px-4 py-2 rounded-lg border border-slate-300 text-sm font-semibold hover:bg-slate-50">Cancel</a>
+            <button type="submit" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-dark">Save profile</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="card rounded-2xl p-6 space-y-4" id="product-store">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Seller Storefront</p>
+          <h2 class="text-2xl font-bold">List products for sale</h2>
+          <p class="text-sm text-slate-600">Poultry, eggs, fertilizer, seedlings, and more.</p>
+        </div>
+      </div>
+      <form id="product-form" class="grid md:grid-cols-2 gap-4">
+        <input name="name" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Product name (e.g. Fresh eggs)">
+        <input name="category" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Category (Poultry, Agro Inputs, Nursery)">
+        <input name="price" type="number" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Price (GHS)">
+        <input name="unit" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Unit (tray, bag, kg)">
+        <input name="quantity" type="number" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Quantity available">
+        <input name="location" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Location">
+        <input name="sellerPhone" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Seller phone/WhatsApp">
+        <input name="sellerEmail" type="email" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Seller email">
+        <input name="seller" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary md:col-span-2" placeholder="Seller name (optional)">
+        <input name="image" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary md:col-span-2" placeholder="Image path (e.g. images/IMG_6854.jpg)">
+        <textarea name="notes" rows="3" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary md:col-span-2" placeholder="Extra details (delivery, quality, packaging)"></textarea>
+        <button type="submit" class="px-4 py-3 rounded-lg bg-primary text-white font-semibold md:col-span-2">Add product</button>
+      </form>
+      <div>
+        <p class="text-sm font-semibold text-slate-700">Your products</p>
+        <div id="product-list-profile" class="grid md:grid-cols-2 gap-3 mt-3"></div>
+      </div>
+      <p class="text-xs text-slate-500">Demo only: products are saved in your browser storage.</p>
+    </div>
+
+    <section class="card rounded-2xl p-6 space-y-4" id="quote-requests">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Seller inbox</p>
+          <h2 class="text-2xl font-bold">Quote requests</h2>
+          <p class="text-sm text-slate-600">Incoming bulk requests from buyers.</p>
+        </div>
+      </div>
+      <div class="overflow-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="text-left text-slate-500 border-b">
+              <th class="py-2 px-3">Buyer</th>
+              <th class="py-2 px-3">Product</th>
+              <th class="py-2 px-3">Qty</th>
+              <th class="py-2 px-3">Delivery</th>
+              <th class="py-2 px-3">Needed by</th>
+              <th class="py-2 px-3">Status</th>
+              <th class="py-2 px-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="quote-table"></tbody>
+        </table>
+      </div>
+      <p class="text-xs text-slate-500">Live data appears when running with <code>?data=live</code> and logged in.</p>
+    </section>
+  </div>
+  <footer class="max-w-5xl mx-auto px-4 pb-8 text-xs text-slate-500">
+    ACTIVATE Skills and Service Marketplace | Ghana
+  </footer>
+  <script>
+    if (!localStorage.getItem('jwt_access')) {
+      window.location.href = 'login.html';
+    }
+  </script>
+  <script>
+    const productForm = document.getElementById('product-form');
+    const productList = document.getElementById('product-list-profile');
+    const storageKey = 'activate_products';
+    const USE_API = new URLSearchParams(window.location.search).get('data') === 'live';
+    const API_BASE_URL = 'http://127.0.0.1:8001/api';
+
+    const loadProducts = () => {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) || [];
+      } catch (err) {
+        return [];
+      }
+    };
+
+    const saveProducts = (list) => {
+      localStorage.setItem(storageKey, JSON.stringify(list));
+    };
+
+    const renderProductList = async () => {
+      if (!productList) return;
+      if (USE_API && localStorage.getItem('jwt_access')) {
+        try {
+          const res = await fetch(`${API_BASE_URL}/products/`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt_access')}` },
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const list = Array.isArray(data) ? data : (data.data || data.results || []);
+            const me = (localStorage.getItem('user_name') || '').toLowerCase();
+            const items = list.filter(p => (p.seller_name || '').toLowerCase() === me);
+            if (!items.length) {
+              productList.innerHTML = '<p class="text-sm text-slate-500">No products added yet.</p>';
+              return;
+            }
+            productList.innerHTML = items.map((product) => `
+              <div class="rounded-xl border border-slate-200 p-4 space-y-2">
+                <p class="text-xs uppercase tracking-wide text-slate-500">${product.category}</p>
+                <p class="font-semibold">${product.name}</p>
+                <p class="text-sm text-slate-600">GHS ${product.price} · ${product.unit} · Qty ${product.quantity}</p>
+                <p class="text-sm text-slate-500">${product.location}</p>
+              </div>
+            `).join('');
+            return;
+          }
+        } catch (err) {
+          // fall back to local
+        }
+      }
+      const items = loadProducts();
+      if (!items.length) {
+        productList.innerHTML = '<p class="text-sm text-slate-500">No products added yet.</p>';
+        return;
+      }
+      productList.innerHTML = items.map((product) => `
+        <div class="rounded-xl border border-slate-200 p-4 space-y-2">
+          <p class="text-xs uppercase tracking-wide text-slate-500">${product.category}</p>
+          <p class="font-semibold">${product.name}</p>
+          <p class="text-sm text-slate-600">GHS ${product.price} · ${product.unit} · Qty ${product.quantity}</p>
+          <p class="text-sm text-slate-500">${product.location}</p>
+        </div>
+      `).join('');
+    };
+
+    const renderQuoteRequests = async () => {
+      const quoteTable = document.getElementById('quote-table');
+      if (!quoteTable) return;
+      if (!(USE_API && localStorage.getItem('jwt_access'))) {
+        quoteTable.innerHTML = '<tr><td class="py-3 px-3 text-slate-500" colspan="7">Log in with live data to view requests.</td></tr>';
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE_URL}/quotes/`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt_access')}` },
+        });
+        if (!res.ok) throw new Error('Failed to load');
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.data || data.results || []);
+        const me = (localStorage.getItem('user_name') || '').toLowerCase();
+        const incoming = list.filter(q => (q.product_seller_name || '').toLowerCase() === me);
+        if (!incoming.length) {
+          quoteTable.innerHTML = '<tr><td class="py-3 px-3 text-slate-500" colspan="7">No quote requests yet.</td></tr>';
+          return;
+        }
+        quoteTable.innerHTML = incoming.map(q => `
+          <tr class="border-b">
+            <td class="py-2 px-3">${q.buyer_name || 'Buyer'}</td>
+            <td class="py-2 px-3">${q.product_name || q.product}</td>
+            <td class="py-2 px-3">${q.quantity || 0}</td>
+            <td class="py-2 px-3">${q.delivery_location || '-'}</td>
+            <td class="py-2 px-3">${q.needed_by || '-'}</td>
+            <td class="py-2 px-3">${q.status || 'new'}</td>
+            <td class="py-2 px-3 space-x-2">
+              <button data-quote-action="quoted" data-quote-id="${q.id}" class="px-2 py-1 rounded border border-emerald-300 text-emerald-700 text-xs">Mark quoted</button>
+              <button data-quote-action="accepted" data-quote-id="${q.id}" class="px-2 py-1 rounded border border-slate-300 text-xs">Accept</button>
+              <button data-quote-action="declined" data-quote-id="${q.id}" class="px-2 py-1 rounded border border-amber-300 text-amber-700 text-xs">Decline</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        quoteTable.innerHTML = '<tr><td class="py-3 px-3 text-red-600" colspan="7">Failed to load quote requests.</td></tr>';
+      }
+    };
+if (productForm) {
+      productForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fd = new FormData(productForm);
+        const payload = Object.fromEntries(fd.entries());
+        const profilePhone = document.getElementById('phone')?.value || '';
+        const profileEmail = document.getElementById('email')?.value || '';
+        const token = localStorage.getItem('jwt_access');
+        if (USE_API && token) {
+          const body = {
+            name: payload.name || 'New product',
+            category: payload.category || 'General',
+            price: Number(payload.price || 0),
+            unit: payload.unit || 'unit',
+            quantity: Number(payload.quantity || 0),
+            location: payload.location || 'Ghana',
+            description: payload.notes || '',
+            image_url: payload.image || '',
+            contact_phone: payload.sellerPhone || profilePhone || '',
+            contact_email: payload.sellerEmail || profileEmail || '',
+          };
+          try {
+            const res = await fetch(`${API_BASE_URL}/products/`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify(body),
+            });
+            if (!res.ok) throw new Error('Failed to create product');
+            productForm.reset();
+            renderProductList();
+            return;
+          } catch (err) {
+            alert('Product save failed. Check your connection.');
+          }
+        }
+        const list = loadProducts();
+        const stamp = Date.now();
+        list.unshift({
+          id: `prod-${stamp}`,
+          name: payload.name || 'New product',
+          category: payload.category || 'General',
+          price: Number(payload.price || 0),
+          unit: payload.unit || 'unit',
+          quantity: Number(payload.quantity || 0),
+          location: payload.location || 'Ghana',
+          seller: payload.seller || localStorage.getItem('user_name') || 'ACTIVATE Seller',
+          sellerId: (payload.seller || localStorage.getItem('user_name') || 'activate-seller').toLowerCase().replace(/\s+/g, '-'),
+          sellerType: 'Seller',
+          sellerPhone: payload.sellerPhone || profilePhone || '000 000 0000',
+          sellerEmail: payload.sellerEmail || profileEmail || 'seller@example.com',
+          image: payload.image || 'images/IMG_6854.jpg',
+          url: `product-detail.html?id=prod-${stamp}`,
+          sellerUrl: `seller-profile.html?user=${(payload.seller || localStorage.getItem('user_name') || 'activate-seller').toLowerCase().replace(/\s+/g, '-')}`,
+        });
+        saveProducts(list);
+        productForm.reset();
+        renderProductList();
+      });
+    }
+
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-quote-action]');
+      if (!btn) return;
+      const token = localStorage.getItem('jwt_access');
+      if (!token) return;
+      const id = btn.dataset.quoteId;
+      const status = btn.dataset.quoteAction;
+      try {
+        const res = await fetch(`${API_BASE_URL}/quotes/${id}/`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ status }),
+        });
+        if (!res.ok) throw new Error('Failed');
+        renderQuoteRequests();
+      } catch (err) {
+        alert('Failed to update quote');
+      }
+    });
+
+    renderProductList();
+    renderQuoteRequests();
+  </script>
+</body>
+</html>
+
+
+
+

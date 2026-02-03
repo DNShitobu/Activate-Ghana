@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#F68B1F', light: '#F6B01E', dark: '#F55203' },
+            accent: '#313131',
+            pop: { pink: '#F68B1F', lime: '#F6B01E', amber: '#F6B01E', violet: '#F55203' },
+            night: '#313131',
+            panel: '#F5F5F5',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: linear-gradient(140deg, #313131 0%, #F5F5F5 40%, #FFFFFF 100%);
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 18px 70px rgba(0,0,0,0.5);
+      backdrop-filter: blur(12px);
+    }
+    .glow-ring {
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.12), 0 0 28px rgba(251,191,36,0.35);
+    }
+  </style>
+</head>
+<body class="text-slate-50 antialiased">
+  <div class="max-w-4xl mx-auto px-4 py-10 space-y-8 min-h-screen flex flex-col">
+    <header class="flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-light via-pop-amber to-pop-pink grid place-items-center font-extrabold text-night shadow-lg">GH</div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-300">ACTIVATE Skills and Service</p>
+          <p class="font-semibold text-lg">Marketplace | Ghana</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-2 text-sm font-semibold">
+        <a href="index.html" class="px-3 py-2 rounded-lg hover:bg-white/10 transition">Home</a>
+        <a href="login.html" class="px-3 py-2 rounded-lg border border-slate-600 hover:border-primary transition">Client/Expert login</a>
+      </div>
+    </header>
+
+    <div class="glass rounded-3xl p-8 glow-ring space-y-6">
+      <div class="space-y-1">
+        <p class="text-xs uppercase tracking-[0.2em] text-amber-200">Admin access</p>
+        <h1 class="text-2xl font-bold">Log in to the admin console</h1>
+        <p class="text-sm text-slate-300">For moderators, dispute managers, and finance roles.</p>
+      </div>
+
+      <div class="space-y-3">
+        <button id="google-login-admin" type="button" class="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 bg-white/90 text-slate-900 font-semibold hover:bg-white transition">
+          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="" class="w-5 h-5"> Continue with Google Workspace
+        </button>
+        <button id="linkedin-login-admin" type="button" class="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 bg-[#0a66c2] text-white font-semibold hover:brightness-110 transition">
+          <img src="https://www.svgrepo.com/show/448234/linkedin.svg" alt="" class="w-5 h-5"> Continue with LinkedIn
+        </button>
+      </div>
+      <div class="flex items-center gap-3 text-xs text-slate-300">
+        <div class="h-px flex-1 bg-white/20"></div>
+        <span>Or use admin credentials</span>
+        <div class="h-px flex-1 bg-white/20"></div>
+      </div>
+      <form class="space-y-4" id="admin-login-form">
+        <div class="space-y-2">
+          <label class="text-sm text-slate-200" for="admin-username">Admin email or username</label>
+          <input id="admin-username" name="admin-username" required class="w-full rounded-xl px-4 py-3 bg-slate-900/60 border border-slate-700 focus:outline-none focus:border-amber-300" placeholder="admin@skillset.gh">
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm text-slate-200" for="admin-password">Password</label>
+          <div class="relative">
+            <input id="admin-password" name="admin-password" type="password" required class="w-full rounded-xl px-4 py-3 bg-slate-900/60 border border-slate-700 focus:outline-none focus:border-amber-300 pr-12" placeholder="Enter your password">
+            <button type="button" class="absolute inset-y-0 right-3 my-auto text-slate-300 hover:text-white text-sm" data-toggle-password="admin-password">Show</button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between text-sm text-slate-300">
+          <label class="inline-flex items-center gap-2">
+            <input type="checkbox" class="form-checkbox rounded border-slate-600 bg-slate-900/60"> Remember me
+          </label>
+          <a href="#" class="hover:text-white">Reset password</a>
+        </div>
+        <button type="submit" class="w-full rounded-xl px-4 py-3 bg-gradient-to-r from-amber-300 via-pop-amber to-pop-pink text-night font-semibold hover:from-amber-200 transition">Log in as admin</button>
+      </form>
+    </div>
+
+    <footer class="text-xs text-slate-400">
+      Demo-only login. Connect this form to the Django admin auth endpoint for production.
+    </footer>
+  </div>
+</body>
+<script src="auth.js"></script>
+</html>
+
+
+

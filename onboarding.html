@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expert Onboarding | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .card { background:#ffffff; border:1px solid #e2e8f0; box-shadow:0 10px 30px rgba(15,23,42,0.08); }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+    <header class="flex items-center justify-between">
+  <a href="index.html" class="text-sm font-semibold text-primary hover:text-primary-dark">Home</a>
+  <div class="flex items-center gap-2 text-sm font-semibold">
+    <a href="marketplace.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Marketplace</a>
+    <a href="login.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Log in</a>
+    <a href="signup.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Sign up</a>
+    <a href="admin-login.html" class="px-3 py-2 rounded-lg border border-amber-300 text-amber-700 hover:bg-amber-50 transition">Admin</a>
+  </div>
+</header>
+
+    <section class="card rounded-2xl p-6 space-y-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Onboarding</p>
+        <h1 class="text-xl font-bold">Complete these steps</h1>
+      </div>
+      <ol class="space-y-3 text-sm">
+        <li class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-primary text-white grid place-items-center text-xs">1</span> Add profile basics (photo, headline, description)</li>
+        <li class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-primary text-white grid place-items-center text-xs">2</span> Verify ID & trade license</li>
+        <li class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-primary text-white grid place-items-center text-xs">3</span> Add service areas, pricing, and availability</li>
+        <li class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-primary text-white grid place-items-center text-xs">4</span> Upload 3+ portfolio items</li>
+      </ol>
+      <div class="space-y-3">
+        <label class="text-sm font-semibold text-slate-700">Service areas</label>
+        <input class="w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="e.g. Accra, Kasoa, Tema">
+        <label class="text-sm font-semibold text-slate-700">Typical pricing (GHS)</label>
+        <div class="grid md:grid-cols-3 gap-2">
+          <input class="rounded-xl border border-slate-300 px-4 py-3" placeholder="Call-out fee">
+          <input class="rounded-xl border border-slate-300 px-4 py-3" placeholder="Hourly">
+          <input class="rounded-xl border border-slate-300 px-4 py-3" placeholder="Day rate">
+        </div>
+        <label class="text-sm font-semibold text-slate-700">Availability</label>
+        <input class="w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="Next available date or hours">
+        <label class="text-sm font-semibold text-slate-700">Portfolio uploads</label>
+        <input type="file" multiple class="w-full rounded-xl border border-slate-300 px-4 py-3">
+        <p class="text-xs text-slate-500">Payouts remain locked until verification and onboarding reach 100%.</p>
+      </div>
+      <div class="flex gap-2">
+        <a href="profile.html" class="px-4 py-2 rounded-lg border border-slate-300 font-semibold">Save & exit</a>
+        <a href="verification.html" class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">Next: Verification</a>
+      </div>
+    </section>
+  </div>
+  <footer class="max-w-5xl mx-auto px-4 pb-8 text-xs text-slate-500">
+    ACTIVATE Skills and Service Marketplace | Ghana
+  </footer>
+</body>
+</html>
+
+
+

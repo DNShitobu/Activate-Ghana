@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skill Category | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#F68B1F', light: '#F6B01E', dark: '#F55203' },
+            accent: '#313131',
+            pop: { pink: '#F68B1F', lime: '#F6B01E', amber: '#F6B01E', violet: '#F55203' },
+            night: '#313131',
+            panel: '#F5F5F5',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #313131; color: #e2e8f0; }
+    .card { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 14px 48px rgba(0,0,0,0.35); backdrop-filter: blur(10px); }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+    <header class="flex items-center justify-between">
+  <a href="index.html" class="text-sm font-semibold text-primary hover:text-primary-light">Home</a>
+  <div class="flex items-center gap-2 text-sm font-semibold">
+    <a href="marketplace.html" class="px-3 py-2 rounded-lg border border-slate-600 hover:border-primary transition">Marketplace</a>
+    <a href="login.html" class="px-3 py-2 rounded-lg border border-slate-600 hover:border-primary transition">Log in</a>
+    <a href="signup.html" class="px-3 py-2 rounded-lg border border-slate-600 hover:border-primary transition">Sign up</a>
+    <a href="admin-login.html" class="px-3 py-2 rounded-lg border border-amber-400 text-amber-200 hover:border-white transition">Admin</a>
+  </div>
+  <footer class="max-w-5xl mx-auto px-4 pb-8 text-xs text-slate-400">
+    ACTIVATE Skills and Service Marketplace | Ghana
+  </footer>
+</header>
+
+    <div id="hero-card" class="card rounded-3xl overflow-hidden relative">
+      <img id="hero-image" src="" alt="" class="w-full h-60 object-cover">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20"></div>
+      <div class="absolute bottom-5 left-5 right-5 space-y-2">
+        <p id="cat-chip" class="inline-flex px-3 py-1 rounded-full border border-white/20 text-xs font-semibold"></p>
+        <h1 id="cat-title" class="text-3xl font-bold"></h1>
+        <p id="cat-desc" class="text-slate-200"></p>
+      </div>
+    </div>
+
+    <section class="space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Experts</p>
+          <p class="text-xl font-semibold">Verified talent for this skill</p>
+        </div>
+        <a href="marketplace.html#experts" class="text-sm text-primary hover:text-primary-light">Back to all experts</a>
+      </div>
+      <div id="cat-experts" class="grid sm:grid-cols-2 gap-4"></div>
+    </section>
+  </div>
+
+  <script>
+    const categoryData = [
+      { name: 'Electricians', description: 'Solar, wiring, backup power, repairs', color: '#F6B01E', image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80' },
+      { name: 'Plumbers', description: 'Fix leaks, bathrooms, borehole hookups', color: '#313131', image: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=1200&q=80' },
+      { name: 'Carpenters', description: 'Doors, roofing, cabinetry, fit-out', color: '#F55203', image: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80' },
+      { name: 'Mechanics', description: 'Auto diagnostics, fleet maintenance', color: '#34d399', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80' },
+      { name: 'Tailors', description: 'Uniforms, occasion wear, alterations', color: '#f59e0b', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=80' },
+      { name: 'Welders', description: 'Gates, windows, structural frames', color: '#c084fc', image: 'https://images.unsplash.com/photo-1508255139162-e1f7b7288ab9?auto=format&fit=crop&w=1200&q=80' },
+      { name: 'Drivers', description: 'School runs, delivery, contract drivers', color: '#38bdf8', image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80' },
+      { name: 'Masons', description: 'Block work, tiling, concrete, finishing', color: '#F68B1F', image: 'https://images.unsplash.com/photo-1503389152951-9f343605f61e?auto=format&fit=crop&w=1200&q=80' },
+    ];
+
+    const expertData = [
+      { name: 'Ama Boateng', role: 'Licensed Electrician', skills: ['Electricians', 'Solar'], rating: 4.8, jobs: 126, location: 'Accra - Madina', verified: true, photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80', profileUrl: 'expert-profile.html?user=ama-boateng' },
+      { name: 'Kofi Mensah', role: 'Plumber', skills: ['Plumbers'], rating: 4.6, jobs: 88, location: 'Kumasi - Asokwa', verified: true, photo: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=600&q=80', profileUrl: 'expert-profile.html?user=kofi-mensah' },
+      { name: 'Esi Quaye', role: 'Carpenter & Joiner', skills: ['Carpenters'], rating: 4.9, jobs: 140, location: 'Accra - Spintex', verified: true, photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80', profileUrl: 'expert-profile.html?user=esi-quaye' },
+      { name: 'Yaw Adom', role: 'Auto Mechanic', skills: ['Mechanics'], rating: 4.5, jobs: 64, location: 'Takoradi', verified: false, photo: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=600&q=80', profileUrl: 'expert-profile.html?user=yaw-adom' },
+      { name: 'Selina Owusu', role: 'Tailor', skills: ['Tailors'], rating: 4.7, jobs: 92, location: 'Accra - Kaneshie', verified: true, photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80', profileUrl: 'expert-profile.html?user=selina-owusu' },
+      { name: 'Issah Fuseini', role: 'Welder', skills: ['Welders'], rating: 4.4, jobs: 53, location: 'Tamale', verified: false, photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80', profileUrl: 'expert-profile.html?user=issah-fuseini' },
+    ];
+
+    const params = new URLSearchParams(window.location.search);
+    const catName = params.get('cat');
+    const category = categoryData.find(c => c.name.toLowerCase() === (catName || '').toLowerCase()) || categoryData[0];
+
+    document.getElementById('hero-image').src = category.image;
+    document.getElementById('hero-image').alt = category.name;
+    document.getElementById('cat-chip').textContent = category.name;
+    document.getElementById('cat-chip').style.borderColor = category.color;
+    document.getElementById('cat-title').textContent = `${category.name} in Ghana`;
+    document.getElementById('cat-desc').textContent = category.description;
+
+    const list = document.getElementById('cat-experts');
+    const filtered = expertData.filter(ex => ex.skills.map(s => s.toLowerCase()).includes(category.name.toLowerCase()));
+    if (!filtered.length) {
+      list.innerHTML = '<div class="card rounded-2xl p-6 text-center text-slate-200 col-span-full">No experts found yet for this skill.</div>';
+    } else {
+      list.innerHTML = filtered.map(expert => `
+        <article class="card rounded-2xl p-4 space-y-2">
+          <div class="flex gap-3">
+            <img src="${expert.photo}" alt="${expert.name}" class="w-14 h-14 rounded-xl object-cover">
+            <div>
+              <p class="text-sm text-slate-300">${expert.location}</p>
+              <a href="${expert.profileUrl}" class="font-semibold hover:text-primary">${expert.name}</a>
+              <p class="text-sm text-slate-300">${expert.role}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap text-xs">
+            <span class="px-2 py-1 rounded-lg ${expert.verified ? 'bg-emerald-500/20 text-emerald-200' : 'bg-amber-500/20 text-amber-200'}">${expert.verified ? 'Verified' : 'Pending verify'}</span>
+            <span class="px-2 py-1 rounded-lg bg-white/10">${expert.rating} ★ · ${expert.jobs} jobs</span>
+            ${expert.skills.map(s => `<span class="px-2 py-1 rounded-lg bg-white/5 border border-white/10">${s}</span>`).join('')}
+          </div>
+        </article>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
+
+
+
+

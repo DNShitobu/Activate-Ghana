@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ghana-focused skills and products marketplace with escrow, verification, and dispute resolution. Hire verified experts or buy farm products with confidence.">
+  <meta property="og:title" content="ACTIVATE Skills and Service Marketplace | Ghana">
+  <meta property="og:description" content="Browse vetted experts, fund escrow, and resolve disputes fairly.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://example.com/">
+  <meta property="og:image" content="images/1-IMG_6479.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "ACTIVATE Skills and Service Marketplace | Ghana",
+    "areaServed": "Ghana",
+    "url": "https://example.com/",
+    "serviceType": ["Electrical", "Plumbing", "Carpentry", "Mechanics"],
+    "paymentAccepted": ["MobileMoney", "Card", "BankTransfer"]
+  }
+  </script>
+  <title>ACTIVATE Skills and Service Marketplace | Ghana MVP</title>
+  <link rel="prefetch" href="support.html" as="document">
+  <link rel="prefetch" href="help-center.html" as="document">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#F68B1F',
+              light: '#F6B01E',
+              dark: '#F55203',
+            },
+            accent: '#313131',
+            pop: {
+              pink: '#F68B1F',
+              lime: '#F6B01E',
+              amber: '#F6B01E',
+              violet: '#F55203',
+            },
+            night: '#313131',
+            panel: '#F5F5F5',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: #F5F5F5;
+      color: #313131;
+    }
+    .glass {
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      box-shadow: 0 18px 70px rgba(0,0,0,0.08);
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      box-shadow: 0 14px 48px rgba(0,0,0,0.08);
+    }
+    .glow-ring {
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 0 28px rgba(34,211,238,0.35);
+    }
+  </style>
+</head>
+  <body class="text-slate-900 antialiased" data-lang="en">
+  <div class="max-w-6xl mx-auto px-4 py-6 space-y-8">
+    <!-- Navbar -->
+    <header class="glass rounded-2xl px-4 py-3 flex flex-col lg:flex-row gap-3 items-center sticky top-4 z-20 glow-ring">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-light via-pop-amber to-pop-pink grid place-items-center font-extrabold text-night shadow-lg">GH</div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-600">ACTIVATE Skills and Service</p>
+          <p class="font-semibold text-lg">Marketplace | Ghana</p>
+        </div>
+      </div>
+      <nav class="ml-auto flex flex-wrap items-center justify-end gap-2">
+        <a href="index.html" class="px-3 py-2 rounded-lg text-sm font-semibold hover:bg-slate-100 transition">Home</a>
+        <a href="marketplace.html" class="px-3 py-2 rounded-lg text-sm font-semibold hover:bg-slate-100 transition">Marketplace</a>
+        <a id="open-login" href="login.html" class="px-3 py-2 rounded-lg text-sm font-semibold border border-slate-600 hover:border-primary transition">Log in</a>
+        <a id="open-signup" href="signup.html" class="px-3 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-primary via-pop-amber to-pop-pink text-night hover:from-primary-light transition">Sign up</a>
+        <a id="open-admin" href="admin-login.html" class="px-3 py-2 rounded-lg text-sm font-semibold border border-amber-400 text-amber-200 hover:border-white transition">Admin</a>
+      </nav>
+    </header>
+
+    <!-- Top showcase carousel -->
+    <section class="relative">
+      <div class="glass rounded-3xl overflow-hidden glow-ring relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-night/80 via-night/30 to-night/5"></div>
+        <div class="flex transition-transform duration-700" id="top-slides">
+          <!-- slides injected by JS -->
+        </div>
+        <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2" id="top-dots"></div>
+        <div class="absolute top-4 left-4 right-4 flex justify-between items-center text-sm text-slate-700">
+          <span class="px-3 py-1 rounded-full border border-slate-200 bg-slate-100">Skilled work in Ghana</span>
+          <span class="hidden sm:inline px-3 py-1 rounded-full border border-slate-200 bg-slate-100">Escrow | Verified | Dispute support</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hero -->
+    <section class="grid lg:grid-cols-12 gap-6">
+      <div class="card rounded-3xl p-6 lg:col-span-7 space-y-4 glow-ring">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 text-xs font-semibold bg-gradient-to-r from-pop-amber/30 via-pop-pink/30 to-accent/30">Built for Ghana | Escrow-first | GHS pricing</span>
+        <h1 class="text-3xl lg:text-4xl font-bold leading-tight" data-i18n="hero_title">Hire trusted experts and release funds only when work is approved.</h1>
+        <p class="text-slate-700">Hire skilled graduates and buy verified farm products in one trusted marketplace.</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-3 py-1 rounded-full bg-pop-lime/20 text-xs font-semibold">Auto-release: 5d | 3d after revision</span>
+          <span class="px-3 py-1 rounded-full bg-pop-amber/20 text-xs font-semibold">Admin: release / split / refund / freeze</span>
+          <span class="px-3 py-1 rounded-full bg-pop-pink/20 text-xs font-semibold">Reviews publish after both or 14d</span>
+          <span class="px-3 py-1 rounded-full bg-accent/20 text-xs font-semibold">Products: eggs · inputs · seedlings</span>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a href="marketplace.html" class="px-4 py-3 rounded-xl bg-gradient-to-r from-primary to-pop-violet text-night font-semibold shadow-lg hover:from-primary-light transition">Explore marketplace</a>
+          <a href="signup.html" class="px-4 py-3 rounded-xl border border-slate-600 font-semibold hover:border-primary transition">Join ACTIVATE</a>
+          <a href="login.html" class="px-4 py-3 rounded-xl border border-pop-amber text-pop-amber font-semibold hover:border-white transition">Log in</a>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-3">
+          <div class="rounded-2xl bg-white/5 border border-white/10 p-3">
+            <p class="text-xs uppercase tracking-wide text-slate-600">Escrow</p>
+            <p class="font-semibold">Funds held safely</p>
+            <p class="text-sm text-slate-600">Auto-release unless dispute or revision.</p>
+          </div>
+          <div class="rounded-2xl bg-white/5 border border-white/10 p-3">
+            <p class="text-xs uppercase tracking-wide text-slate-600">Verification</p>
+            <p class="font-semibold">Badges & ID</p>
+            <p class="text-sm text-slate-600">Admins freeze wallets and split payouts.</p>
+          </div>
+          <div class="rounded-2xl bg-white/5 border border-white/10 p-3">
+            <p class="text-xs uppercase tracking-wide text-slate-600">Reviews</p>
+            <p class="font-semibold">Two-way & fair</p>
+            <p class="text-sm text-slate-600">Publishes after both submit or 14 days.</p>
+          </div>
+        </div>
+      </div>
+      <div class="lg:col-span-5 space-y-4">
+        <div class="card rounded-3xl overflow-hidden glow-ring relative">
+          <img src="images/IMG_6829.jpg" alt="Skilled graduate on site" class="w-full h-72 lg:h-80 object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20"></div>
+          <div class="absolute bottom-4 left-4 right-4 space-y-1">
+            <p class="text-sm text-slate-700">Accra - On-site metalwork completed with escrow protection and milestone approvals.</p>
+            <p class="text-xl font-semibold">See the pros at work</p>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <figure class="card rounded-2xl overflow-hidden">
+            <img src="images/IMG_6830.jpg" alt="Tailor working on uniforms" class="w-full h-36 object-cover">
+            <figcaption class="p-3 text-sm text-slate-700">Bulk uniforms tailored in Tema with clear delivery dates.</figcaption>
+          </figure>
+          <figure class="card rounded-2xl overflow-hidden">
+            <img src="images/IMG_6831.jpg" alt="Mechanic servicing a vehicle" class="w-full h-36 object-cover">
+            <figcaption class="p-3 text-sm text-slate-700">Fleet maintenance in Kumasi with transparent quotes.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+        <!-- Highlights -->
+    <section class="space-y-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-slate-600">Why ACTIVATE</p>
+        <h2 class="text-2xl font-bold">A trusted place for services and products</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="card rounded-2xl p-5 space-y-2">
+          <p class="text-xs uppercase tracking-wide text-slate-600">Skilled graduates</p>
+          <p class="text-lg font-semibold">Hire verified talent</p>
+          <p class="text-sm text-slate-600">Browse skills by location and category in the marketplace.</p>
+        </div>
+        <div class="card rounded-2xl p-5 space-y-2">
+          <p class="text-xs uppercase tracking-wide text-slate-600">Products</p>
+          <p class="text-lg font-semibold">Buy farm inputs & produce</p>
+          <p class="text-sm text-slate-600">Find eggs, live birds, fertilizers, and seedlings.</p>
+        </div>
+        <div class="card rounded-2xl p-5 space-y-2">
+          <p class="text-xs uppercase tracking-wide text-slate-600">Trust</p>
+          <p class="text-lg font-semibold">Escrow and reviews</p>
+          <p class="text-sm text-slate-600">Safer payments, ratings, and dispute support.</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href="marketplace.html" class="px-4 py-3 rounded-xl bg-gradient-to-r from-primary to-pop-violet text-night font-semibold shadow-lg hover:from-primary-light transition">Go to marketplace</a>
+        <a href="signup.html" class="px-4 py-3 rounded-xl border border-slate-600 font-semibold hover:border-primary transition">Sign up</a>
+      </div>
+    </section>
+
+    <footer class="glass rounded-3xl p-6 mt-10 glow-ring">
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="space-y-2">
+          <div class="flex items-center gap-2">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-light via-pop-amber to-pop-pink grid place-items-center font-extrabold text-night shadow-lg">GH</div>
+            <p class="font-semibold">ACTIVATE Skills and Service Marketplace</p>
+          </div>
+          <p class="text-sm text-slate-600">Escrow-first jobs, verified artisans, and dispute support across Ghana.</p>
+          <a href="signup.html" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-night font-semibold hover:bg-primary-light transition text-sm">Create an account</a>
+        </div>
+        <div class="space-y-2">
+          <p class="text-sm uppercase tracking-wide text-slate-600">Navigate</p>
+          <a href="marketplace.html" class="block text-sm hover:text-white">Marketplace</a>
+          <a href="products.html" class="block text-sm hover:text-white">Products</a>
+          <a href="login.html" class="block text-sm hover:text-white">Log in</a>
+          <a href="signup.html" class="block text-sm hover:text-white">Sign up</a>
+          <a href="admin-login.html" class="block text-sm hover:text-white">Admin login</a>
+          <a href="support.html" class="block text-sm hover:text-white">Help</a>
+        </div>
+        <div class="space-y-2">
+          <p class="text-sm uppercase tracking-wide text-slate-600">Support</p>
+          <p class="text-sm text-slate-700">Call/WhatsApp: 050-000-0000</p>
+          <p class="text-sm text-slate-700">Email: support@skillset.gh</p>
+          <p class="text-sm text-slate-700">Hours: Mon-Sat, 8am-6pm</p>
+        </div>
+        <div class="space-y-2">
+          <p class="text-sm uppercase tracking-wide text-slate-600">Get started</p>
+          <a href="marketplace.html" class="block text-sm hover:text-white">Browse skills</a>
+          <a href="products.html" class="block text-sm hover:text-white">Buy products</a>
+          <a href="profile.html#product-store" class="block text-sm hover:text-white">Sell products</a>
+        </div>
+      </div>
+      <p class="text-xs text-slate-500 mt-4">Built for Ghana | Escrow, ID verification, and dispute resolution.</p>
+    </footer>
+  </div>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
