@@ -24,6 +24,7 @@ from .models import (
 from .serializers import (
     SignupSerializer,
     LoginSerializer,
+    EmailLoginSerializer,
     JobSerializer,
     ProposalSerializer,
     ProposalUpdateSerializer,
@@ -115,6 +116,32 @@ def admin_login(request):
         {"access": str(refresh.access_token), "refresh": str(refresh), "role": "admin", "username": user.username, "email": user.email}
     )
 
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def admin_login_email(request):
+    serializer = EmailLoginSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.validated_data["user"]
+    if not user.is_staff:
+        return Response({"detail": "Not admin"}, status=status.HTTP_403_FORBIDDEN)
+    refresh = RefreshToken.for_user(user)
+    return Response(
+        {"access": str(refresh.access_token), "refresh": str(refresh), "role": "admin", "username": user.username, "email": user.email}
+    )
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def login_email(request):
+    serializer = EmailLoginSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.validated_data["user"]
+    refresh = RefreshToken.for_user(user)
+    role = getattr(getattr(user, "profile", None), "role", None) or user.first_name or "client"
+    return Response(
+        {"access": str(refresh.access_token), "refresh": str(refresh), "role": role, "username": user.username, "email": user.email}
+    )
 
 @api_view(["POST"])
 @permission_classes([AllowAny])

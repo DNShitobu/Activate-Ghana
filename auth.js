@@ -1,12 +1,14 @@
 // Lightweight auth wiring to Django API with JWT storage.
 // Configure API base URL here:
-const API_BASE = 'http://127.0.0.1:8001/api';
+const API_BASE = window.API_BASE || 'http://127.0.0.1:8001/api';
 const USE_LIVE = new URLSearchParams(window.location.search).get('data') === 'live';
 
 const endpoints = {
   login: `${API_BASE}/auth/login/`,
+  loginEmail: `${API_BASE}/auth/login-email/`,
   signup: `${API_BASE}/auth/signup/`,
   adminLogin: `${API_BASE}/auth/admin/login/`,
+  adminLoginEmail: `${API_BASE}/auth/admin/login-email/`,
   refresh: `${API_BASE}/auth/jwt/refresh/`,
   passwordReset: `${API_BASE}/auth/password/reset/`,
   passwordResetConfirm: `${API_BASE}/auth/password/reset/confirm/`,
@@ -76,7 +78,10 @@ function bindLogin(formId, roleTarget) {
       delete payload["admin-password"];
     }
     const role = submitRole || roleTarget || 'client';
-    const endpoint = role === 'admin' ? endpoints.adminLogin : endpoints.login;
+    const isEmail = typeof payload.username === 'string' && payload.username.includes('@');
+    const endpoint = role === 'admin'
+      ? (isEmail ? endpoints.adminLoginEmail : endpoints.adminLogin)
+      : (isEmail ? endpoints.loginEmail : endpoints.login);
     try {
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!res.ok) throw new Error('Login failed');

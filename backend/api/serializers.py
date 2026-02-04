@@ -19,6 +19,8 @@ User = get_user_model()
 
 
 class SignupSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=False, allow_blank=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True)
     role = serializers.CharField(write_only=True, required=False, default="client")
 
@@ -31,8 +33,25 @@ class SignupSerializer(serializers.ModelSerializer):
             return "expert"
         return "client"
 
+    def validate_email(self, value):
+        email = value.strip().lower()
+        if User.objects.filter(email__iexact=email).exists():
+            raise serializers.ValidationError("Email already registered.")
+        return email
+
     def create(self, validated_data):
         role = validated_data.pop("role", "client")
+        raw_username = (validated_data.get("username") or "").strip()
+        email = validated_data.get("email", "").strip().lower()
+        if not raw_username:
+            base = email.split("@")[0] if email else "user"
+            candidate = base
+            suffix = 1
+            while User.objects.filter(username=candidate).exists():
+                suffix += 1
+                candidate = f"{base}{suffix}"
+            validated_data["username"] = candidate
+        validated_data["email"] = email
         user = User.objects.create_user(**validated_data)
         user.first_name = role  # simple role storage
         user.save()
@@ -44,7 +63,30 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField()
 
     def validate(self, attrs):
-        user = authenticate(username=attrs["username"], password=attrs["password"])
+        identifier = attrs["username"].strip()
+        password = attrs["password"]
+        user = authenticate(username=identifier, password=password)
+        if not user and "@" in identifier:
+            user_obj = User.objects.filter(email__iexact=identifier).first()
+            if user_obj:
+                user = authenticate(username=user_obj.username, password=password)
+        if not user:
+            raise serializers.ValidationError("Invalid credentials")
+        attrs["user"] = user
+        return attrs
+
+
+class EmailLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+    def validate(self, attrs):
+        email = attrs["email"].strip()
+        password = attrs["password"]
+        user_obj = User.objects.filter(email__iexact=email).first()
+        if not user_obj:
+            raise serializers.ValidationError("Invalid credentials")
+        user = authenticate(username=user_obj.username, password=password)
         if not user:
             raise serializers.ValidationError("Invalid credentials")
         attrs["user"] = user
