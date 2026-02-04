@@ -13,7 +13,57 @@ let categoryData = [
 ];
 
 const USE_API = new URLSearchParams(window.location.search).get('data') === 'live';
-const API_BASE_URL = 'http://127.0.0.1:8001/api';
+const API_BASE_URL = window.API_BASE || 'http://127.0.0.1:8001/api';
+const LIVE_QS = USE_API ? '&data=live' : '';
+
+const marketState = {
+  experts: { page: 1, skill: '', location: '', verified: 'any', category: 'All' },
+  jobs: { page: 1, keyword: '', location: '', status: 'All' },
+  products: { page: 1, query: '', location: '', maxPrice: 0, category: 'All' },
+};
+
+function extractPage(url) {
+  try {
+    const parsed = new URL(url);
+    const page = Number(parsed.searchParams.get('page'));
+    return Number.isNaN(page) ? 1 : page;
+  } catch (err) {
+    return 1;
+  }
+}
+
+function renderPagination(containerId, entity, pageInfo) {
+  const containers = [
+    ...document.querySelectorAll(`[data-pagination="${entity}"]`),
+  ];
+  const primary = document.getElementById(containerId);
+  if (primary && !containers.includes(primary)) containers.push(primary);
+  if (!containers.length) return;
+  const html = (!pageInfo || (!pageInfo.next && !pageInfo.previous)) ? '' : (() => {
+    const prevPage = pageInfo.previous ? extractPage(pageInfo.previous) : null;
+    const nextPage = pageInfo.next ? extractPage(pageInfo.next) : null;
+    return `
+      ${prevPage ? `<button data-page-entity="${entity}" data-page="${prevPage}" class="px-3 py-2 rounded-lg border border-slate-300 text-xs font-semibold hover:border-primary transition">Previous</button>` : ''}
+      <span class="text-xs text-slate-600">Page ${marketState[entity].page}</span>
+      ${nextPage ? `<button data-page-entity="${entity}" data-page="${nextPage}" class="px-3 py-2 rounded-lg border border-slate-300 text-xs font-semibold hover:border-primary transition">Next</button>` : ''}
+    `;
+  })();
+  containers.forEach(container => {
+    container.innerHTML = html;
+  });
+}
+
+async function fetchPaginated(endpoint, params, page = 1) {
+  const search = new URLSearchParams({ ...(params || {}), page });
+  const url = `${API_BASE_URL}/${endpoint}/?${search.toString()}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch');
+  const data = await res.json();
+  if (Array.isArray(data)) {
+    return { results: data, next: null, previous: null, count: data.length };
+  }
+  return data;
+}
 
 let expertData = [
   { id: 'ama-boateng', name: 'Ama Boateng', role: 'Licensed Electrician', skills: ['Electricians', 'Solar'], rating: 4.8, jobs: 126, location: 'Accra - Madina', verified: true, photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80', profileUrl: 'expert-profile.html?user=ama-boateng', portfolio: ['https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600&q=80'] },
@@ -440,8 +490,10 @@ function applyLang(lang) {
 function renderCategories() {
   const grid = document.getElementById('category-grid');
   if (!grid) return;
+  const fromParam = encodeURIComponent(window.location.pathname + window.location.search + '#categories');
+  const liveParam = USE_API ? '&data=live' : '';
   grid.innerHTML = categoryData.slice(0, 6).map(cat => `
-    <a href="category.html?cat=${encodeURIComponent(cat.name)}" class="card rounded-2xl overflow-hidden block hover:-translate-y-1 transition transform">
+    <a href="category.html?cat=${encodeURIComponent(cat.name)}&from=${fromParam}${liveParam}" class="card rounded-2xl overflow-hidden block hover:-translate-y-1 transition transform">
       <div class="h-32 bg-cover bg-center" style="background-image:url('${cat.image}')"></div>
       <div class="p-4 space-y-1">
         <p class="text-xs uppercase tracking-wide" style="color:${cat.color}">${cat.name}</p>
@@ -456,12 +508,71 @@ function getCheckedSkills() {
   return Array.from(document.querySelectorAll('[data-skill]:checked')).map(cb => cb.dataset.skill);
 }
 
-function renderExperts(filter = 'All', skillText = '', locationText = '') {
+async function renderExperts(filter = 'All', skillText = '', locationText = '') {
   const list = document.getElementById('expert-list');
   const tableBody = document.getElementById('expert-table-body');
   if (!list) return;
   const checkedSkills = getCheckedSkills();
   const verifiedFilter = document.getElementById('expert-verified')?.value || 'any';
+  const useRemote = USE_API && document.getElementById('expert-pagination');
+  if (useRemote) {
+    marketState.experts.skill = skillText || '';
+    marketState.experts.location = locationText || '';
+    marketState.experts.verified = verifiedFilter;
+    marketState.experts.category = filter;
+    const params = { role: 'expert' };
+    if (skillText) params.q = skillText;
+    if (filter && filter !== 'All') params.q = params.q ? `${params.q} ${filter}` : filter;
+    if (locationText) params.location = locationText;
+    if (verifiedFilter === 'verified') params.verified_id = 'true';
+    try {
+      const data = await fetchPaginated('profiles', params, marketState.experts.page);
+      const results = data.results || [];
+      if (!results.length) {
+        list.innerHTML = `<div class="col-span-full card rounded-2xl p-6 text-center text-slate-200">No experts match your filters.</div>`;
+        if (tableBody) tableBody.innerHTML = '';
+        renderPagination('expert-pagination', 'experts', data);
+        return;
+      }
+      const mapped = results.map(profile => ({
+        name: profile.username,
+        role: profile.role || 'Expert',
+        location: profile.location || 'Ghana',
+        verified: Boolean(profile.verified_id || profile.verified_trade || profile.verified_background),
+        photo: profile.avatar_url || 'images/IMG_6751.jpg',
+        profileUrl: `expert-profile.html?user=${profile.username}`,
+      }));
+      list.innerHTML = mapped.map(expert => `
+        <article class="card rounded-2xl p-4 space-y-2">
+          <div class="flex gap-3">
+            <img src="${expert.photo}" alt="${expert.name}" class="w-14 h-14 rounded-xl object-cover" loading="lazy">
+            <div>
+              <p class="text-sm text-slate-300">${expert.location}</p>
+              <a href="${expert.profileUrl}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#experts')}` : ''}" class="font-semibold hover:text-primary">${expert.name}</a>
+              <p class="text-sm text-slate-300">${expert.role}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap text-xs">
+            <span class="px-2 py-1 rounded-lg ${expert.verified ? 'bg-emerald-500/20 text-emerald-200' : 'bg-amber-500/20 text-amber-200'}">${expert.verified ? 'Verified' : 'Pending verify'}</span>
+          </div>
+        </article>
+      `).join('');
+      if (tableBody) {
+        tableBody.innerHTML = mapped.map(expert => `
+          <tr class="border-b border-slate-700/40">
+            <td class="px-4 py-3"><a href="${expert.profileUrl}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#experts')}` : ''}" class="text-primary hover:underline">${expert.name}</a></td>
+            <td class="px-4 py-3 text-slate-200">${expert.role}</td>
+            <td class="px-4 py-3 text-slate-200">${expert.location}</td>
+            <td class="px-4 py-3 text-slate-200">${expert.verified ? 'Verified' : 'Pending'}</td>
+          </tr>
+        `).join('');
+      }
+      renderPagination('expert-pagination', 'experts', data);
+      return;
+    } catch (err) {
+      // fall back to local data
+    }
+  }
   const availDays = Number(document.getElementById('expert-availability')?.value || 0);
   const minRate = Number(document.getElementById('expert-rate-min')?.value || 0);
   const maxRate = Number(document.getElementById('expert-rate-max')?.value || 0);
@@ -487,7 +598,7 @@ function renderExperts(filter = 'All', skillText = '', locationText = '') {
         <img src="${expert.photo}" alt="${expert.name}" class="w-14 h-14 rounded-xl object-cover" loading="lazy">
         <div>
           <p class="text-sm text-slate-300">${expert.location}</p>
-          <a href="${expert.profileUrl}" class="font-semibold hover:text-primary">${expert.name}</a>
+          <a href="${expert.profileUrl}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#experts')}` : ''}" class="font-semibold hover:text-primary">${expert.name}</a>
           <p class="text-sm text-slate-300">${expert.role}</p>
         </div>
       </div>
@@ -503,7 +614,7 @@ function renderExperts(filter = 'All', skillText = '', locationText = '') {
   if (tableBody) {
     tableBody.innerHTML = filtered.map(expert => `
       <tr class="border-b border-slate-700/40">
-        <td class="px-4 py-3"><a href="${expert.profileUrl}" class="text-primary hover:underline">${expert.name}</a></td>
+        <td class="px-4 py-3"><a href="${expert.profileUrl}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#experts')}` : ''}" class="text-primary hover:underline">${expert.name}</a></td>
         <td class="px-4 py-3 text-slate-200">${expert.role}</td>
         <td class="px-4 py-3 text-slate-200">${expert.location}</td>
         <td class="px-4 py-3 text-slate-200">${expert.rating} / 5</td>
@@ -521,9 +632,74 @@ function renderExpertFilter(active = activeExpertCategory || 'All') {
   `).join('');
 }
 
-function renderJobs(text = '', locationText = '', status = 'All') {
+async function renderJobs(text = '', locationText = '', status = 'All') {
   const list = document.getElementById('job-list');
   if (!list) return;
+  const useRemote = USE_API && document.getElementById('job-pagination');
+  if (useRemote) {
+    marketState.jobs.keyword = text || '';
+    marketState.jobs.location = locationText || '';
+    marketState.jobs.status = status || 'All';
+    const params = {};
+    if (text) params.q = text;
+    if (locationText) params.location = locationText;
+    if (status && status !== 'All') {
+      const map = {
+        'Applications open': 'applications_open',
+        'Shortlisting': 'shortlisting',
+        'Pre-funded escrow': 'prefunded',
+        'In progress': 'in_progress',
+        'Completed': 'completed',
+      };
+      params.status = map[status] || status.toLowerCase().replace(/\s+/g, '_');
+    }
+    try {
+      const data = await fetchPaginated('jobs', params, marketState.jobs.page);
+      const results = data.results || [];
+      if (!results.length) {
+        list.innerHTML = `<div class="col-span-full card rounded-2xl p-6 text-center text-slate-200">No jobs match your filters.</div>`;
+        const tableBody = document.getElementById('job-table-body');
+        if (tableBody) tableBody.innerHTML = '';
+        renderPagination('job-pagination', 'jobs', data);
+        return;
+      }
+      const mapped = results.map(job => ({
+        id: job.id,
+        title: job.title,
+        location: job.location || 'Ghana',
+        budget: `GHS ${job.budget}`,
+        status: (job.status || '').replace(/_/g, ' '),
+        image: job.image || 'images/IMG_6854.jpg',
+        url: `job-detail.html?id=${job.id}`,
+      }));
+      list.innerHTML = mapped.map(job => `
+        <article class="card rounded-2xl overflow-hidden">
+          <div class="h-36 bg-cover bg-center" style="background-image:url('${job.image}')" loading="lazy"></div>
+          <div class="p-4 space-y-1">
+            <p class="text-xs uppercase tracking-wide text-slate-300">${job.location}</p>
+            <a href="${job.url}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#jobs')}` : ''}" class="font-semibold text-lg hover:text-primary">${job.title}</a>
+            <p class="text-sm text-slate-300">${job.budget}</p>
+            <span class="px-2 py-1 rounded-lg bg-primary/20 text-primary text-xs font-semibold">${job.status}</span>
+          </div>
+        </article>
+      `).join('');
+      const tableBody = document.getElementById('job-table-body');
+      if (tableBody) {
+        tableBody.innerHTML = mapped.map(job => `
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="px-4 py-3"><a href="${job.url}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#jobs')}` : ''}" class="text-primary hover:underline">${job.title}</a></td>
+            <td class="px-4 py-3 text-slate-600">${job.location}</td>
+            <td class="px-4 py-3 text-slate-600">${job.budget}</td>
+            <td class="px-4 py-3 text-slate-600">${job.status}</td>
+          </tr>
+        `).join('');
+      }
+      renderPagination('job-pagination', 'jobs', data);
+      return;
+    } catch (err) {
+      // fall back to local data
+    }
+  }
   const filtered = jobData.filter(job => {
     const matchesText = !text || job.title.toLowerCase().includes(text.toLowerCase()) || job.location.toLowerCase().includes(text.toLowerCase());
     const matchesLocation = !locationText || job.location.toLowerCase().includes(locationText.toLowerCase());
@@ -541,7 +717,7 @@ function renderJobs(text = '', locationText = '', status = 'All') {
       <div class="h-36 bg-cover bg-center" style="background-image:url('${job.image}')" loading="lazy"></div>
       <div class="p-4 space-y-1">
         <p class="text-xs uppercase tracking-wide text-slate-300">${job.location}</p>
-        <a href="${job.url}" class="font-semibold text-lg hover:text-primary">${job.title}</a>
+        <a href="${job.url}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#jobs')}` : ''}" class="font-semibold text-lg hover:text-primary">${job.title}</a>
         <p class="text-sm text-slate-300">${job.budget}</p>
         <span class="px-2 py-1 rounded-lg bg-primary/20 text-primary text-xs font-semibold">${job.status}</span>
       </div>
@@ -552,7 +728,7 @@ function renderJobs(text = '', locationText = '', status = 'All') {
   if (tableBody) {
     tableBody.innerHTML = filtered.map(job => `
       <tr class="border-b border-slate-100 hover:bg-slate-50">
-        <td class="px-4 py-3"><a href="${job.url}" class="text-primary hover:underline">${job.title}</a></td>
+        <td class="px-4 py-3"><a href="${job.url}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#jobs')}` : ''}" class="text-primary hover:underline">${job.title}</a></td>
         <td class="px-4 py-3 text-slate-600">${job.location}</td>
         <td class="px-4 py-3 text-slate-600">${job.budget}</td>
         <td class="px-4 py-3 text-slate-600">${job.status}</td>
@@ -585,10 +761,65 @@ function renderProductFilters(active = activeProductCategory || 'All') {
   `).join('');
 }
 
-function renderProducts(filter = 'All', query = '', locationText = '', maxPrice = 0) {
+async function renderProducts(filter = 'All', query = '', locationText = '', maxPrice = 0) {
   const list = document.getElementById('product-list');
   const tableBody = document.getElementById('product-table-body');
   if (!list && !tableBody) return;
+  const useRemote = USE_API && document.getElementById('product-pagination');
+  if (useRemote) {
+    marketState.products.query = query || '';
+    marketState.products.location = locationText || '';
+    marketState.products.maxPrice = maxPrice || 0;
+    marketState.products.category = filter || 'All';
+    const params = {};
+    if (query) params.q = query;
+    if (locationText) params.location = locationText;
+    if (maxPrice) params.max_price = maxPrice;
+    if (filter && filter !== 'All') params.category = filter;
+    try {
+      const data = await fetchPaginated('products', params, marketState.products.page);
+      const results = data.results || [];
+      const mapped = results.map(product => ({
+        ...product,
+        url: `product-detail.html?id=${product.id}`,
+        sellerUrl: product.seller_name ? `seller-profile.html?user=${product.seller_name}` : '#',
+      }));
+      if (list) {
+        if (!mapped.length) {
+          list.innerHTML = `<div class="col-span-full card rounded-2xl p-6 text-center text-slate-200">No products match your filters.</div>`;
+        } else {
+          list.innerHTML = mapped.map(product => `
+            <article class="card rounded-2xl overflow-hidden">
+              <img src="${product.image_url || product.image || ''}" alt="${product.name}" class="w-full h-40 object-cover" loading="lazy">
+              <div class="p-4 space-y-2">
+                <p class="text-xs uppercase tracking-wide text-slate-300">${product.category}</p>
+            <a href="${product.url}${LIVE_QS}${(window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#products')}` : ''}" class="font-semibold text-lg hover:text-primary">${product.name}</a>
+                <p class="text-sm text-slate-300">GHS ${product.price} · ${product.unit} · Qty ${product.quantity}</p>
+                <p class="text-sm text-slate-400">${product.location}</p>
+                <p class="text-sm text-slate-300">Seller: <a href="${product.sellerUrl}" class="text-primary-light hover:text-white">${product.seller || product.seller_name || 'Seller'}</a></p>
+              </div>
+            </article>
+          `).join('');
+        }
+      }
+      if (tableBody) {
+        tableBody.innerHTML = mapped.map(product => `
+          <tr class="border-b border-slate-700/40">
+            <td class="px-4 py-3"><a href="${product.url}${LIVE_QS}${(window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#products')}` : ''}" class="text-primary hover:underline">${product.name}</a></td>
+            <td class="px-4 py-3 text-slate-200">${product.category}</td>
+            <td class="px-4 py-3 text-slate-200">GHS ${product.price} / ${product.unit}</td>
+            <td class="px-4 py-3 text-slate-200">${product.quantity}</td>
+            <td class="px-4 py-3 text-slate-200">${product.location}</td>
+            <td class="px-4 py-3"><a href="${product.sellerUrl}" class="text-primary hover:underline">${product.seller || product.seller_name || 'Seller'}</a></td>
+          </tr>
+        `).join('');
+      }
+      renderPagination('product-pagination', 'products', data);
+      return;
+    } catch (err) {
+      // fall back to local data
+    }
+  }
   const items = getAllProducts();
   const filtered = items.filter(product => {
     const matchesCategory = filter === 'All' || product.category === filter;
@@ -606,7 +837,7 @@ function renderProducts(filter = 'All', query = '', locationText = '', maxPrice 
           <img src="${product.image || product.image_url || ''}" alt="${product.name}" class="w-full h-40 object-cover" loading="lazy">
           <div class="p-4 space-y-2">
             <p class="text-xs uppercase tracking-wide text-slate-300">${product.category}</p>
-            <a href="${product.url}" class="font-semibold text-lg hover:text-primary">${product.name}</a>
+            <a href="${product.url}${LIVE_QS}${(window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#products')}` : ''}" class="font-semibold text-lg hover:text-primary">${product.name}</a>
             <p class="text-sm text-slate-300">GHS ${product.price} · ${product.unit} · Qty ${product.quantity}</p>
             <p class="text-sm text-slate-400">${product.location}</p>
             <p class="text-sm text-slate-300">Seller: <a href="${product.sellerUrl || '#'}" class="text-primary-light hover:text-white">${product.seller || product.seller_name || 'Seller'}</a></p>
@@ -618,7 +849,7 @@ function renderProducts(filter = 'All', query = '', locationText = '', maxPrice 
   if (tableBody) {
     tableBody.innerHTML = filtered.map(product => `
       <tr class="border-b border-slate-700/40">
-        <td class="px-4 py-3"><a href="${product.url}" class="text-primary hover:underline">${product.name}</a></td>
+        <td class="px-4 py-3"><a href="${product.url}${LIVE_QS}${(window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#products')}` : ''}" class="text-primary hover:underline">${product.name}</a></td>
         <td class="px-4 py-3 text-slate-200">${product.category}</td>
         <td class="px-4 py-3 text-slate-200">GHS ${product.price} / ${product.unit}</td>
         <td class="px-4 py-3 text-slate-200">${product.quantity}</td>
@@ -629,11 +860,26 @@ function renderProducts(filter = 'All', query = '', locationText = '', maxPrice 
   }
 }
 
-function renderProductDetail() {
+async function renderProductDetail() {
   const wrap = document.getElementById('product-detail');
   if (!wrap) return;
   const id = new URLSearchParams(window.location.search).get('id');
-  const product = getAllProducts().find(p => p.id === id) || getAllProducts()[0];
+  let product = getAllProducts().find(p => p.id === id) || getAllProducts()[0];
+  if (USE_API && id) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/products/${id}/`);
+      if (res.ok) {
+        const direct = await res.json();
+        product = {
+          ...direct,
+          url: `product-detail.html?id=${direct.id}`,
+          sellerUrl: direct.seller_name ? `seller-profile.html?user=${direct.seller_name}` : '#',
+        };
+      }
+    } catch (err) {
+      // fall back to local data
+    }
+  }
   if (!product) return;
   const sellerName = product.seller || product.seller_name || 'Seller';
   const sellerPhone = product.sellerPhone || product.contact_phone || '';
@@ -779,11 +1025,35 @@ function renderProductDetail() {
   }
 }
 
-function renderExpertProfile() {
+async function renderExpertProfile() {
   const wrap = document.getElementById('expert-profile');
   if (!wrap) return;
   const userId = new URLSearchParams(window.location.search).get('user');
-  const target = expertData.find(e => e.id === userId) || expertData[0];
+  let target = expertData.find(e => e.id === userId) || expertData[0];
+  if (USE_API && userId) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/profiles/?role=expert&q=${encodeURIComponent(userId)}`);
+      if (res.ok) {
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.results || data.data || []);
+        const profile = list.find(p => p.username === userId) || list[0];
+        if (profile) {
+          target = {
+            id: profile.username,
+            name: profile.username,
+            role: profile.role || 'Expert',
+            location: profile.location || 'Ghana',
+            photo: profile.avatar_url || 'images/IMG_6751.jpg',
+            skills: [],
+            rating: profile.rating || 0,
+            jobs: profile.jobs || 0,
+          };
+        }
+      }
+    } catch (err) {
+      // fall back to local data
+    }
+  }
   if (!target) {
     wrap.innerHTML = `<p class="text-sm text-slate-500">Expert not found.</p>`;
     return;
@@ -795,12 +1065,13 @@ function renderExpertProfile() {
         <p class="text-xs uppercase tracking-wide text-slate-500">${target.location}</p>
         <h1 class="text-2xl font-bold">${target.name}</h1>
         <p class="text-slate-600">${target.role}</p>
-        <p class="text-sm text-slate-500">${target.rating} * - ${target.jobs} jobs</p>
+        <p class="text-sm text-slate-500">${target.rating || 0} * - ${target.jobs || 0} jobs</p>
       </div>
     </div>
+    ${(target.skills && target.skills.length) ? `
     <div class="flex flex-wrap gap-2">
       ${(target.skills || []).map(s => `<span class="px-2 py-1 rounded-lg bg-slate-100 text-sm">${s}</span>`).join('')}
-    </div>
+    </div>` : ''}
     <div class="flex gap-2">
       <a href="chat.html?new=${encodeURIComponent(target.name)}" class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">Message expert</a>
       <a href="signup.html" class="px-4 py-2 rounded-lg border border-slate-200 font-semibold">Hire this expert</a>
@@ -834,7 +1105,7 @@ function renderSellerProfile() {
         <img src="${product.image || product.image_url || ''}" alt="${product.name}" class="w-full h-40 object-cover" loading="lazy">
         <div class="p-4 space-y-2">
           <p class="text-xs uppercase tracking-wide text-slate-300">${product.category}</p>
-          <a href="${product.url}" class="font-semibold text-lg hover:text-primary">${product.name}</a>
+            <a href="${product.url}${LIVE_QS}${(window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#products')}` : ''}" class="font-semibold text-lg hover:text-primary">${product.name}</a>
           <p class="text-sm text-slate-300">GHS ${product.price} - ${product.unit} - Qty ${product.quantity}</p>
           <p class="text-sm text-slate-400">${product.location}</p>
         </div>
@@ -946,6 +1217,7 @@ function wireFilters() {
         const locVal = document.getElementById('expert-location')?.value || document.getElementById('location-input')?.value || '';
         activeExpertCategory = e.target.dataset.cat;
         renderExpertFilter(activeExpertCategory);
+        marketState.experts.page = 1;
         renderExperts(activeExpertCategory, skillVal, locVal);
       }
     });
@@ -957,6 +1229,7 @@ function wireFilters() {
       e.preventDefault();
       activeExpertCategory = 'All';
       renderExpertFilter(activeExpertCategory);
+      marketState.experts.page = 1;
       renderExperts('All', document.getElementById('skill-input')?.value || '', document.getElementById('location-input')?.value || '');
       scrollToSection('experts');
     });
@@ -969,6 +1242,7 @@ function wireFilters() {
       const val = document.getElementById('nav-search')?.value || '';
       activeExpertCategory = 'All';
       renderExpertFilter(activeExpertCategory);
+      marketState.experts.page = 1;
       renderExperts('All', val, '');
       scrollToSection('experts');
     });
@@ -980,6 +1254,7 @@ function wireFilters() {
       e.preventDefault();
       const skillVal = document.getElementById('expert-skill').value;
       const locVal = document.getElementById('expert-location').value;
+      marketState.experts.page = 1;
       renderExperts(activeExpertCategory, skillVal, locVal);
       scrollToSection('experts');
     });
@@ -992,6 +1267,7 @@ function wireFilters() {
       const text = document.getElementById('job-keyword').value;
       const loc = document.getElementById('job-location').value;
       const status = document.getElementById('job-status').value;
+      marketState.jobs.page = 1;
       renderJobs(text, loc, status);
       scrollToSection('jobs');
     });
@@ -1031,6 +1307,7 @@ function wireFilters() {
         const max = Number(document.getElementById('product-max')?.value || 0);
         activeProductCategory = e.target.dataset.prodCat;
         renderProductFilters(activeProductCategory);
+        marketState.products.page = 1;
         renderProducts(activeProductCategory, query, loc, max);
       }
     });
@@ -1043,6 +1320,7 @@ function wireFilters() {
       const query = document.getElementById('product-query')?.value || '';
       const loc = document.getElementById('product-location')?.value || '';
       const max = Number(document.getElementById('product-max')?.value || 0);
+      marketState.products.page = 1;
       renderProducts(activeProductCategory, query, loc, max);
       scrollToSection('products');
     });
@@ -1056,10 +1334,29 @@ function wireFilters() {
       const query = document.getElementById('product-query')?.value || '';
       const loc = document.getElementById('product-location')?.value || '';
       const max = Number(document.getElementById('product-max')?.value || 0);
+      marketState.products.page = 1;
       renderProducts(activeProductCategory, query, loc, max);
       tableSection.scrollIntoView({ behavior: 'smooth' });
     });
   }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-page-entity]');
+    if (!btn) return;
+    const entity = btn.dataset.pageEntity;
+    const page = Number(btn.dataset.page || 1);
+    if (!marketState[entity]) return;
+    marketState[entity].page = page;
+    if (entity === 'experts') {
+      renderExperts(marketState.experts.category, marketState.experts.skill, marketState.experts.location);
+    }
+    if (entity === 'jobs') {
+      renderJobs(marketState.jobs.keyword, marketState.jobs.location, marketState.jobs.status);
+    }
+    if (entity === 'products') {
+      renderProducts(marketState.products.category, marketState.products.query, marketState.products.location, marketState.products.maxPrice);
+    }
+  });
 
   const radiusInput = document.getElementById('expert-radius');
   if (radiusInput) {

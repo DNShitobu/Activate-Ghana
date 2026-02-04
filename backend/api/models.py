@@ -12,11 +12,19 @@ class UserProfile(models.Model):
     verified_id = models.BooleanField(default=False)
     verified_trade = models.BooleanField(default=False)
     verified_background = models.BooleanField(default=False)
+    email_verified = models.BooleanField(default=False)
     rate_min = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     rate_max = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     availability_days = models.PositiveIntegerField(null=True, blank=True)
     lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    bio = models.TextField(blank=True)
+    phone = models.CharField(max_length=30, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    avatar = models.ImageField(upload_to="profiles/", null=True, blank=True)
+    kyc_id_document = models.FileField(upload_to="kyc/id/", null=True, blank=True)
+    kyc_trade_license = models.FileField(upload_to="kyc/trade/", null=True, blank=True)
+    kyc_background_check = models.FileField(upload_to="kyc/background/", null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} ({self.role})"
@@ -92,6 +100,7 @@ class Review(models.Model):
     rating = models.PositiveIntegerField()
     text = models.TextField()
     evidence = models.JSONField(default=list, blank=True)
+    evidence_files = models.JSONField(default=list, blank=True)
     private_note = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -152,6 +161,7 @@ class Product(models.Model):
     location = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
     image_url = models.URLField(blank=True)
+    image = models.ImageField(upload_to="products/", null=True, blank=True)
     contact_phone = models.CharField(max_length=50, blank=True)
     contact_email = models.EmailField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

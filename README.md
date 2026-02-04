@@ -1,22 +1,24 @@
 # ACTIVATE Skills and Service Marketplace (Ghana MVP)
 
-Tailwind-powered frontend plus a Django backend scaffold. Blue/white professional palette, image-rich cards, carousel, and Ghana-first trust cues (escrow, disputes, two-way reviews).
+Tailwind-powered frontend plus a Django backend with real API endpoints, JWT auth wiring, products/quotes/chat, and dashboards. Jumia brand palette, image-rich cards, and Ghana-first trust cues (escrow, disputes, two-way reviews).
 
 ## Structure
-- `index.html` — Tailwind CDN single page with carousel, hero search, category and expert cards.
-- `scripts.js` — Vanilla JS to render sample data, filters, carousel, and smooth scrolling.
-- `backend/` — Django 5 scaffold with simple JSON endpoints:
-  - `manage.py`, `skillset/` project, `api/` app with `/api/health`, `/api/experts`, `/api/jobs`, `/api/disputes`.
-  - `requirements.txt` for Django + DRF.
+- `index.html` - Tailwind CDN landing page with carousel, hero search, category and expert cards.
+- `marketplace.html`, `products.html`, `product-detail.html`, `expert-profile.html` - Marketplace browsing and detail views.
+- `dashboard.html`, `dashboard-expert.html`, `admin-dashboard.html`, `profile.html` - Role dashboards and profile management.
+- `scripts.js` - Vanilla JS for rendering data, filters, carousel, and client-side flows.
+- `auth.js` - JWT login/signup/admin login + OAuth start URLs; stores tokens in `localStorage`.
+- `config.js` - Central API base for deployed backend.
+- `backend/` - Django 5 API (DRF + SimpleJWT + CORS + Postgres-ready).
 
 ## Run the frontend
-- Open `index.html` directly in a modern browser (Tailwind CDN + Unsplash images).
+- Open `index.html` directly in a modern browser (Tailwind CDN + local images).
 - Optional local server: `python -m http.server 8000` then visit `http://localhost:8000/`.
 
-## Auth & API wiring (frontend expectations)
+## Auth and API wiring (frontend expectations)
 - Auth pages (`login.html`, `signup.html`, `admin-login.html`) call `/api/auth/...` endpoints for login/signup/admin login, JWT, password reset, and OAuth (Google/LinkedIn) via `auth.js`. Tokens are stored in `localStorage` (`jwt_access`, `jwt_refresh`, `user_role`).
-- Adjust `API_BASE` in `auth.js` if the Django backend runs elsewhere.
-- Dashboards, onboarding, job post, proposals, disputes, payments, analytics, and help center are static stubs ready to hook to the Django REST API.
+- Adjust `window.API_BASE` in `config.js` if the Django backend runs elsewhere.
+- Dashboards and marketplace use live API data when `?data=live` is present; otherwise they use sample data.
 
 ## Run the backend (Django)
 ```bash
@@ -27,19 +29,33 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver 8001
 ```
-APIs live at `http://127.0.0.1:8001/api/experts` etc.
+APIs live at `http://127.0.0.1:8001/api/`.
+
+## Deploy on Render (backend + static frontend)
+1) Push this repo to GitHub (done).
+2) Create a Render Blueprint from `render.yaml` (recommended), or manually create:
+   - Web Service (rootDir `backend`) using build:
+     `pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput`
+     and start: `gunicorn skillset.wsgi:application`.
+   - Postgres database and connect `DATABASE_URL`.
+   - Static Site (root `/`) with `staticPublishPath: .`.
+3) Set environment variables on the Web Service:
+   - `DJANGO_SECRET_KEY`, `DEBUG=False`, `ALLOWED_HOSTS=.onrender.com`
+   - `CORS_ALLOWED_ORIGINS=https://activate-ghana.onrender.com`
+   - `CSRF_TRUSTED_ORIGINS=https://activate-ghana.onrender.com`
+4) Update `config.js`:
+   - `window.API_BASE = "https://activate-ghana-backend.onrender.com/api";`
+5) Re-deploy the static site so the new `config.js` ships.
 
 ## UI highlights
-- Navbar: Find experts search box, Browse jobs link, Login and Sign up buttons.
-- Hero: CTA buttons, dual search, trust pills, and stat cards.
-- Carousel: rotating trust/feature highlights with imagery.
-- Cards: category, expert, job, review, and dispute cards now include photos, badges, and chips.
-- Trust cues: escrow timers (5d initial, 3d after revision), admin actions (release_full, release_partial, refund_client, split_funds, freeze_wallet), two-way review publish rule (both parties or 14 days).
-- Low-bandwidth mode: set `document.body.dataset.lite = "1"` in `scripts.js` to compress images and pause autoplay for low-end Android users.
-- Accessibility/perf: lazy-load images; use Lighthouse to audit focus, contrast, and cache headers.
-- Support: `support.html` / `help-center.html` offer FAQ links, call/WhatsApp buttons, and a ticket form.
+- Navbar: Home, Marketplace, Login, Admin, Sign up; right-aligned.
+- Carousel + cards: category, expert, job, review, dispute cards include photos, badges, and chips.
+- Marketplace: browse experts/jobs/products; filter by skills/location; product detail includes seller contact + chat.
+- Dashboards: client/expert/admin dashboards with quotes, escrow, proposals, and admin actions.
+- Chat: localStorage mode or live API mode (when `?data=live` + JWT).
+- Support: `support.html` / `help-center.html` with FAQ links, call/WhatsApp buttons, and a ticket form.
 
 ## Next steps (optional)
-1) Swap CDN Tailwind for a build pipeline (Vite/Next.js) and connect real API calls.  
-2) Replace sample data with Django responses; add loading states and toasts.  
-3) Extend Django with auth/JWT and real models for accounts, experts, jobs, contracts, disputes, and reviews.  
+1) Replace remaining sample data with Django responses; add loading states and error toasts.
+2) Add real role-based permissions and admin CRUD for users, jobs, products, and disputes.
+3) Add file uploads (product images, KYC, evidence) with S3-compatible storage.

@@ -150,6 +150,10 @@ class PayoutSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="user.username")
     email = serializers.EmailField(source="user.email")
+    avatar_url = serializers.SerializerMethodField()
+    kyc_id_document_url = serializers.SerializerMethodField()
+    kyc_trade_license_url = serializers.SerializerMethodField()
+    kyc_background_check_url = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -157,6 +161,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "username",
             "email",
             "role",
+            "email_verified",
             "verified_id",
             "verified_trade",
             "verified_background",
@@ -165,7 +170,83 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "availability_days",
             "lat",
             "lng",
+            "bio",
+            "phone",
+            "location",
+            "avatar",
+            "avatar_url",
+            "kyc_id_document",
+            "kyc_trade_license",
+            "kyc_background_check",
+            "kyc_id_document_url",
+            "kyc_trade_license_url",
+            "kyc_background_check_url",
         ]
+
+    def _build_file_url(self, obj, field_name):
+        file_field = getattr(obj, field_name)
+        if not file_field:
+            return ""
+        request = self.context.get("request")
+        url = file_field.url
+        return request.build_absolute_uri(url) if request else url
+
+    def validate_avatar(self, value):
+        if value is None:
+            return value
+        if value.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError("Avatar too large (max 5MB).")
+        if value.content_type not in ["image/jpeg", "image/png"]:
+            raise serializers.ValidationError("Unsupported image type.")
+        return value
+
+    def _validate_file(self, value):
+        if value is None:
+            return value
+        if value.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError("File too large (max 5MB).")
+        if value.content_type not in ["image/jpeg", "image/png", "application/pdf"]:
+            raise serializers.ValidationError("Unsupported file type.")
+        return value
+
+    def validate_kyc_id_document(self, value):
+        return self._validate_file(value)
+
+    def validate_kyc_trade_license(self, value):
+        return self._validate_file(value)
+
+    def validate_kyc_background_check(self, value):
+        return self._validate_file(value)
+
+    def get_kyc_id_document_url(self, obj):
+        return self._build_file_url(obj, "kyc_id_document")
+
+    def get_kyc_trade_license_url(self, obj):
+        return self._build_file_url(obj, "kyc_trade_license")
+
+    def get_kyc_background_check_url(self, obj):
+        return self._build_file_url(obj, "kyc_background_check")
+
+    def get_avatar_url(self, obj):
+        return self._build_file_url(obj, "avatar")
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+        is_owner = user and user.is_authenticated and user.id == instance.user_id
+        is_admin = user and user.is_authenticated and user.is_staff
+        if not (is_owner or is_admin):
+            for field in [
+                "kyc_id_document",
+                "kyc_trade_license",
+                "kyc_background_check",
+                "kyc_id_document_url",
+                "kyc_trade_license_url",
+                "kyc_background_check_url",
+            ]:
+                data.pop(field, None)
+        return data
 
 
 class NotificationPreferenceSerializer(serializers.ModelSerializer):
@@ -188,11 +269,29 @@ class UserAdminSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     seller_name = serializers.CharField(source="seller.username", read_only=True)
+    image_file = serializers.ImageField(source="image", required=False, allow_null=True)
 
     class Meta:
         model = Product
         fields = "__all__"
         read_only_fields = ["seller", "created_at", "seller_name"]
+
+    def validate_image_file(self, value):
+        if value is None:
+            return value
+        if value.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError("Image too large (max 5MB).")
+        if value.content_type not in ["image/jpeg", "image/png"]:
+            raise serializers.ValidationError("Unsupported image type.")
+        return value
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.image:
+            request = self.context.get("request")
+            url = instance.image.url
+            data["image_url"] = request.build_absolute_uri(url) if request else url
+        return data
 
 
 class QuoteRequestSerializer(serializers.ModelSerializer):

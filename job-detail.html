@@ -28,7 +28,7 @@
 <body class="antialiased">
   <div class="max-w-4xl mx-auto px-4 py-8 space-y-6">
     <header class="flex items-center justify-between">
-      <a href="index.html" class="text-sm font-semibold text-primary hover:text-primary-dark">← Back to home</a>
+      <a id="back-link" href="index.html" class="text-sm font-semibold text-primary hover:text-primary-dark">Back to results</a>
       <a href="index.html#jobs" class="text-sm text-slate-600 hover:text-primary">Browse more jobs</a>
     </header>
 
@@ -46,7 +46,17 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script>
+    const back = document.getElementById('back-link');
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get('from');
+    if (back && from) back.href = from;
+    const id = params.get('id');
+    const card = document.getElementById('job-card');
+    const API_BASE = window.API_BASE || 'http://127.0.0.1:8001/api';
+    const USE_API = params.get('data') === 'live';
+
     const jobData = {
       'job-1': { title: 'Wire 2-bedroom apartment + solar changeover', location: 'Kasoa', budget: 'GHS 4,800', status: 'Applications open', description: 'Complete wiring, changeover to solar, safety checks.' },
       'job-2': { title: 'Fix leaking bathroom + retile floor', location: 'Cape Coast', budget: 'GHS 2,100', status: 'Shortlisting', description: 'Seal leaks, replace tiles, ensure waterproofing.' },
@@ -56,22 +66,26 @@
       'job-6': { title: 'Gate fabrication + install', location: 'Takoradi', budget: 'GHS 5,700', status: 'New', description: 'Metal gate fabrication, powder coat, on-site install.' },
     };
 
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    const job = jobData[id];
-    const card = document.getElementById('job-card');
-    if (!job) {
-      card.innerHTML = '<p class="text-slate-600">Job not found. Please return to the listings.</p>';
-    } else {
+    const renderJob = (job) => {
+      if (!job) {
+        card.innerHTML = '<p class="text-slate-600">Job not found. Please return to the listings.</p>';
+        return;
+      }
       document.getElementById('job-title').textContent = job.title;
-      document.getElementById('job-location').textContent = job.location;
-      document.getElementById('job-budget').textContent = job.budget;
-      document.getElementById('job-status').textContent = job.status;
-      document.getElementById('job-description').textContent = job.description;
+      document.getElementById('job-location').textContent = job.location || 'Ghana';
+      document.getElementById('job-budget').textContent = (job.budget || '').toString().includes('GHS') ? job.budget : `GHS ${job.budget}`;
+      document.getElementById('job-status').textContent = (job.status || '').replace(/_/g, ' ');
+      document.getElementById('job-description').textContent = job.description || '';
+    };
+
+    if (USE_API && id) {
+      fetch(`${API_BASE}/jobs/${id}/`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => renderJob(data))
+        .catch(() => renderJob(jobData[id]));
+    } else {
+      renderJob(jobData[id]);
     }
   </script>
 </body>
 </html>
-
-
-

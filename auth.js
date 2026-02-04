@@ -11,6 +11,7 @@ const endpoints = {
   adminLoginEmail: `${API_BASE}/auth/admin/login-email/`,
   refresh: `${API_BASE}/auth/jwt/refresh/`,
   passwordReset: `${API_BASE}/auth/password/reset/`,
+  resendVerify: `${API_BASE}/auth/email/verify/`,
   passwordResetConfirm: `${API_BASE}/auth/password/reset/confirm/`,
   oauthGoogle: `${API_BASE}/auth/oauth/google/start`,
   oauthLinkedIn: `${API_BASE}/auth/oauth/linkedin/start`,
@@ -149,6 +150,27 @@ function bindPasswordReset(linkId) {
   });
 }
 
+function bindResendVerification(linkId) {
+  const link = document.getElementById(linkId);
+  if (!link) return;
+  link.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = prompt('Enter your email to resend verification:');
+    if (!email) return;
+    try {
+      const res = await fetch(endpoints.resendVerify, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) throw new Error('Request failed');
+      showToast('Verification email sent');
+    } catch (err) {
+      showToast(err.message || 'Request failed', 'error');
+    }
+  });
+}
+
 function bindOAuth(buttonId, provider) {
   const btn = document.getElementById(buttonId);
   if (!btn) return;
@@ -169,6 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
   bindOAuth('linkedin-login-admin', 'linkedin');
   bindOAuth('google-signup', 'google');
   bindOAuth('linkedin-signup', 'linkedin');
+  bindResendVerification('resend-verify');
+  bindResendVerification('resend-verify-signup');
 
   // password eye toggles
   document.querySelectorAll('[data-toggle-password]').forEach(btn => {

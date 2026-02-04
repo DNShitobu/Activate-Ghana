@@ -67,15 +67,15 @@
         </div>
       </div>
 
-      <form class="grid gap-4" action="dashboard-expert.html" method="get">
+      <form id="profile-form" class="grid gap-4">
         <div class="grid md:grid-cols-3 gap-4">
           <div class="md:col-span-1 space-y-2">
             <label class="text-sm font-semibold text-slate-700">Profile photo</label>
             <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center space-y-2">
-              <div class="w-20 h-20 mx-auto rounded-full bg-slate-200 grid place-items-center text-slate-500 text-sm">Photo</div>
+              <div id="avatar-preview" class="w-20 h-20 mx-auto rounded-full bg-slate-200 grid place-items-center text-slate-500 text-sm">Photo</div>
               <label class="cursor-pointer text-sm font-semibold text-primary hover:text-primary-dark">
                 Upload image
-                <input type="file" accept="image/*" class="hidden">
+                <input id="avatar" name="avatar" type="file" accept="image/*" class="hidden">
               </label>
               <p class="text-xs text-slate-500">PNG or JPG up to 2MB.</p>
             </div>
@@ -108,7 +108,8 @@
               <div class="aspect-square rounded-xl bg-slate-100 border border-slate-200"></div>
               <div class="aspect-square rounded-xl bg-slate-100 border border-slate-200"></div>
             </div>
-            <input type="file" multiple class="w-full rounded-xl border border-slate-300 px-4 py-3">
+            <input type="file" multiple class="w-full rounded-xl border border-slate-300 px-4 py-3" disabled>
+            <p class="text-xs text-slate-500">Portfolio uploads will be added in a later iteration.</p>
           </div>
           <div class="space-y-2">
             <p class="text-sm font-semibold text-slate-700">Typical pricing band</p>
@@ -133,8 +134,23 @@
           </div>
         </div>
 
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-700">KYC ID document</label>
+            <input id="kyc-id" name="kyc_id_document" type="file" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-700">Trade license</label>
+            <input id="kyc-trade" name="kyc_trade_license" type="file" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-700">Background check</label>
+            <input id="kyc-background" name="kyc_background_check" type="file" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+          </div>
+        </div>
+
         <div class="flex items-center justify-between">
-          <p class="text-sm text-slate-600">Saving updates is demo-only. In production connect this form to your API.</p>
+          <p class="text-sm text-slate-600">Your updates sync to the API when logged in with <code>?data=live</code>.</p>
           <div class="flex gap-2">
             <a href="dashboard-expert.html" class="px-4 py-2 rounded-lg border border-slate-300 text-sm font-semibold hover:bg-slate-50">Cancel</a>
             <button type="submit" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-dark">Save profile</button>
@@ -161,7 +177,8 @@
         <input name="sellerPhone" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Seller phone/WhatsApp">
         <input name="sellerEmail" type="email" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary" placeholder="Seller email">
         <input name="seller" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary md:col-span-2" placeholder="Seller name (optional)">
-        <input name="image" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary md:col-span-2" placeholder="Image path (e.g. images/IMG_6854.jpg)">
+        <input name="imageUrl" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary md:col-span-2" placeholder="Image URL (optional)">
+        <input name="imageFile" type="file" accept="image/*" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary md:col-span-2">
         <textarea name="notes" rows="3" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:border-primary md:col-span-2" placeholder="Extra details (delivery, quality, packaging)"></textarea>
         <button type="submit" class="px-4 py-3 rounded-lg bg-primary text-white font-semibold md:col-span-2">Add product</button>
       </form>
@@ -202,17 +219,19 @@
   <footer class="max-w-5xl mx-auto px-4 pb-8 text-xs text-slate-500">
     ACTIVATE Skills and Service Marketplace | Ghana
   </footer>
+  <script src="config.js"></script>
   <script>
     if (!localStorage.getItem('jwt_access')) {
       window.location.href = 'login.html';
     }
   </script>
   <script>
+    const profileForm = document.getElementById('profile-form');
     const productForm = document.getElementById('product-form');
     const productList = document.getElementById('product-list-profile');
     const storageKey = 'activate_products';
     const USE_API = new URLSearchParams(window.location.search).get('data') === 'live';
-    const API_BASE_URL = 'http://127.0.0.1:8001/api';
+    const API_BASE_URL = window.API_BASE || 'http://127.0.0.1:8001/api';
 
     const loadProducts = () => {
       try {
@@ -224,6 +243,39 @@
 
     const saveProducts = (list) => {
       localStorage.setItem(storageKey, JSON.stringify(list));
+    };
+
+    const renderAvatar = (url) => {
+      const box = document.getElementById('avatar-preview');
+      if (!box) return;
+      if (!url) {
+        box.style.backgroundImage = '';
+        box.textContent = 'Photo';
+        return;
+      }
+      box.textContent = '';
+      box.style.backgroundImage = `url(${url})`;
+      box.style.backgroundSize = 'cover';
+      box.style.backgroundPosition = 'center';
+    };
+
+    const loadProfile = async () => {
+      const token = localStorage.getItem('jwt_access');
+      if (!(USE_API && token)) return;
+      try {
+        const res = await fetch(`${API_BASE_URL}/profiles/me/`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        document.getElementById('profile-description').value = data.bio || '';
+        document.getElementById('location').value = data.location || '';
+        document.getElementById('phone').value = data.phone || '';
+        document.getElementById('email').value = data.email || '';
+        renderAvatar(data.avatar_url || '');
+      } catch (err) {
+        // ignore
+      }
     };
 
     const renderProductList = async () => {
@@ -246,7 +298,7 @@
               <div class="rounded-xl border border-slate-200 p-4 space-y-2">
                 <p class="text-xs uppercase tracking-wide text-slate-500">${product.category}</p>
                 <p class="font-semibold">${product.name}</p>
-                <p class="text-sm text-slate-600">GHS ${product.price} Â· ${product.unit} Â· Qty ${product.quantity}</p>
+                <p class="text-sm text-slate-600">GHS ${product.price} · ${product.unit} · Qty ${product.quantity}</p>
                 <p class="text-sm text-slate-500">${product.location}</p>
               </div>
             `).join('');
@@ -265,7 +317,7 @@
         <div class="rounded-xl border border-slate-200 p-4 space-y-2">
           <p class="text-xs uppercase tracking-wide text-slate-500">${product.category}</p>
           <p class="font-semibold">${product.name}</p>
-          <p class="text-sm text-slate-600">GHS ${product.price} Â· ${product.unit} Â· Qty ${product.quantity}</p>
+          <p class="text-sm text-slate-600">GHS ${product.price} · ${product.unit} · Qty ${product.quantity}</p>
           <p class="text-sm text-slate-500">${product.location}</p>
         </div>
       `).join('');
@@ -310,32 +362,77 @@
         quoteTable.innerHTML = '<tr><td class="py-3 px-3 text-red-600" colspan="7">Failed to load quote requests.</td></tr>';
       }
     };
-if (productForm) {
+
+    const bindProfileSave = () => {
+      if (!profileForm) return;
+      profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('jwt_access');
+        if (!(USE_API && token)) {
+          alert('Log in with ?data=live to save to the API.');
+          return;
+        }
+        const bio = document.getElementById('profile-description')?.value || '';
+        const phone = document.getElementById('phone')?.value || '';
+        const location = document.getElementById('location')?.value || '';
+        const avatarFile = document.getElementById('avatar')?.files?.[0];
+        const kycId = document.getElementById('kyc-id')?.files?.[0];
+        const kycTrade = document.getElementById('kyc-trade')?.files?.[0];
+        const kycBackground = document.getElementById('kyc-background')?.files?.[0];
+
+        const formData = new FormData();
+        formData.append('bio', bio);
+        formData.append('phone', phone);
+        formData.append('location', location);
+        if (avatarFile) formData.append('avatar', avatarFile);
+        if (kycId) formData.append('kyc_id_document', kycId);
+        if (kycTrade) formData.append('kyc_trade_license', kycTrade);
+        if (kycBackground) formData.append('kyc_background_check', kycBackground);
+
+        try {
+          const res = await fetch(`${API_BASE_URL}/profiles/me/`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData,
+          });
+          if (!res.ok) throw new Error('Failed');
+          const data = await res.json();
+          renderAvatar(data.avatar_url || '');
+          alert('Profile updated.');
+        } catch (err) {
+          alert('Profile update failed.');
+        }
+      });
+    };
+
+    const bindProductSave = () => {
+      if (!productForm) return;
       productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const token = localStorage.getItem('jwt_access');
         const fd = new FormData(productForm);
         const payload = Object.fromEntries(fd.entries());
         const profilePhone = document.getElementById('phone')?.value || '';
         const profileEmail = document.getElementById('email')?.value || '';
-        const token = localStorage.getItem('jwt_access');
         if (USE_API && token) {
-          const body = {
-            name: payload.name || 'New product',
-            category: payload.category || 'General',
-            price: Number(payload.price || 0),
-            unit: payload.unit || 'unit',
-            quantity: Number(payload.quantity || 0),
-            location: payload.location || 'Ghana',
-            description: payload.notes || '',
-            image_url: payload.image || '',
-            contact_phone: payload.sellerPhone || profilePhone || '',
-            contact_email: payload.sellerEmail || profileEmail || '',
-          };
+          const body = new FormData();
+          body.append('name', payload.name || 'New product');
+          body.append('category', payload.category || 'General');
+          body.append('price', payload.price || 0);
+          body.append('unit', payload.unit || 'unit');
+          body.append('quantity', payload.quantity || 0);
+          body.append('location', payload.location || 'Ghana');
+          body.append('description', payload.notes || '');
+          body.append('contact_phone', payload.sellerPhone || profilePhone || '');
+          body.append('contact_email', payload.sellerEmail || profileEmail || '');
+          if (payload.imageUrl) body.append('image_url', payload.imageUrl);
+          const imageFile = productForm.querySelector('input[name="imageFile"]')?.files?.[0];
+          if (imageFile) body.append('image', imageFile);
           try {
             const res = await fetch(`${API_BASE_URL}/products/`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-              body: JSON.stringify(body),
+              headers: { 'Authorization': `Bearer ${token}` },
+              body,
             });
             if (!res.ok) throw new Error('Failed to create product');
             productForm.reset();
@@ -360,7 +457,7 @@ if (productForm) {
           sellerType: 'Seller',
           sellerPhone: payload.sellerPhone || profilePhone || '000 000 0000',
           sellerEmail: payload.sellerEmail || profileEmail || 'seller@example.com',
-          image: payload.image || 'images/IMG_6854.jpg',
+          image: payload.imageUrl || 'images/IMG_6854.jpg',
           url: `product-detail.html?id=prod-${stamp}`,
           sellerUrl: `seller-profile.html?user=${(payload.seller || localStorage.getItem('user_name') || 'activate-seller').toLowerCase().replace(/\s+/g, '-')}`,
         });
@@ -368,7 +465,7 @@ if (productForm) {
         productForm.reset();
         renderProductList();
       });
-    }
+    };
 
     document.addEventListener('click', async (e) => {
       const btn = e.target.closest('[data-quote-action]');
@@ -390,12 +487,21 @@ if (productForm) {
       }
     });
 
+    const avatarInput = document.getElementById('avatar');
+    if (avatarInput) {
+      avatarInput.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        renderAvatar(url);
+      });
+    }
+
+    loadProfile();
+    bindProfileSave();
+    bindProductSave();
     renderProductList();
     renderQuoteRequests();
   </script>
 </body>
 </html>
-
-
-
-

@@ -92,7 +92,10 @@
             <label class="inline-flex items-center gap-2">
               <input type="checkbox" class="form-checkbox rounded border-slate-600 bg-slate-900/60"> Remember me
             </label>
-            <a id="forgot-password" href="#" class="hover:text-white">Forgot password?</a>
+            <div class="flex items-center gap-3">
+              <a id="forgot-password" href="#" class="hover:text-white">Forgot password?</a>
+              <a id="resend-verify" href="#" class="text-primary-light hover:text-white">Resend verification email</a>
+            </div>
           </div>
           <div class="grid sm:grid-cols-2 gap-2">
             <button type="submit" data-role="client" class="w-full rounded-xl px-4 py-3 bg-gradient-to-r from-primary via-pop-amber to-pop-pink text-night font-semibold hover:from-primary-light transition">Log in as client</button>
@@ -119,8 +122,12 @@
     </footer>
   </div>
 </body>
-<script src="auth.js"></script>
+<script src="config.js"></script>
+  <script src="auth.js"></script>
 </html>
+
+
+
 
 
 

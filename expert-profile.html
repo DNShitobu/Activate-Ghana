@@ -24,7 +24,7 @@
 <body class="antialiased">
   <div class="max-w-5xl mx-auto px-4 py-8 space-y-6">
     <header class="flex items-center justify-between">
-      <a href="marketplace.html#experts" class="text-sm font-semibold text-primary">Back to marketplace</a>
+      <a id="back-link" href="marketplace.html#experts" class="text-sm font-semibold text-primary">Back to marketplace</a>
       <nav class="flex items-center gap-2 text-sm font-semibold">
         <a href="index.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Home</a>
         <a href="marketplace.html" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Marketplace</a>
@@ -39,6 +39,15 @@
   <footer class="max-w-5xl mx-auto px-4 pb-8 text-xs text-slate-500">
     ACTIVATE Skills and Service Marketplace | Ghana
   </footer>
+  <script src="config.js"></script>
   <script src="scripts.js"></script>
+  <script>
+    const back = document.getElementById('back-link');
+    const from = new URLSearchParams(window.location.search).get('from');
+    if (back && from) back.href = from;
+  </script>
 </body>
 </html>
+
+
+

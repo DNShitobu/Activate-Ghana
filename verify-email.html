@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Email | ACTIVATE Skills and Service Marketplace | Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#F68B1F', light: '#F6B01E', dark: '#F55203' },
+            accent: '#313131',
+            panel: '#F5F5F5',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #f7f7f7; color: #1f2937; }
+    .card { background: #ffffff; border: 1px solid #e5e7eb; box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08); }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="max-w-xl mx-auto px-4 py-12">
+    <div class="card rounded-2xl p-6 space-y-4 text-center">
+      <h1 class="text-2xl font-bold">Verify your email</h1>
+      <p class="text-sm text-slate-600">Confirming your email secures your account and enables sign-in.</p>
+      <div id="status" class="text-sm text-slate-600">Processing...</div>
+      <div class="pt-2">
+        <a href="login.html" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-white font-semibold">Go to login</a>
+      </div>
+    </div>
+  </div>
+  <script src="config.js"></script>
+  <script>
+    const statusEl = document.getElementById('status');
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const API_BASE = window.API_BASE || 'http://127.0.0.1:8001/api';
+    if (!token) {
+      statusEl.textContent = 'Missing token. Please request a new verification email.';
+    } else {
+      fetch(`${API_BASE}/auth/email/verify/confirm/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      })
+        .then(res => res.json().then(data => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+          statusEl.textContent = ok ? 'Email verified successfully.' : (data.detail || 'Verification failed.');
+        })
+        .catch(() => {
+          statusEl.textContent = 'Verification failed. Please try again.';
+        });
+    }
+  </script>
+</body>
+</html>

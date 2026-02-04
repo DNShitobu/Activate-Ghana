@@ -12,6 +12,7 @@ from .views import (
     admin_login,
     admin_login_email,
     password_reset,
+    password_reset_confirm,
     oauth_start,
     me,
     JobViewSet,
@@ -21,12 +22,16 @@ from .views import (
     NotificationViewSet,
     PayoutViewSet,
     NotificationPreferenceViewSet,
+    UserProfileViewSet,
     UserViewSet,
     ProductViewSet,
     QuoteRequestViewSet,
     ChatThreadViewSet,
     ChatMessageViewSet,
     list_notifications,
+    FileUploadView,
+    verify_email_request,
+    verify_email_confirm,
 )
 
 router = DefaultRouter()
@@ -37,6 +42,7 @@ router.register(r"reviews", ReviewViewSet, basename="reviews")
 router.register(r"notifications", NotificationViewSet, basename="notifications")
 router.register(r"payouts", PayoutViewSet, basename="payouts")
 router.register(r"notification-prefs", NotificationPreferenceViewSet, basename="notification-prefs")
+router.register(r"profiles", UserProfileViewSet, basename="profiles")
 router.register(r"users", UserViewSet, basename="users")
 router.register(r"products", ProductViewSet, basename="products")
 router.register(r"quotes", QuoteRequestViewSet, basename="quotes")
@@ -52,8 +58,12 @@ urlpatterns = [
     path("auth/admin/login/", admin_login),
     path("auth/admin/login-email/", admin_login_email),
     path("auth/password/reset/", password_reset),
+    path("auth/password/reset/confirm/", password_reset_confirm),
+    path("auth/email/verify/", verify_email_request),
+    path("auth/email/verify/confirm/", verify_email_confirm),
     path("auth/oauth/<str:provider>/start", oauth_start),
     path("auth/jwt/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("uploads/", FileUploadView.as_view(), name="uploads"),
     path("experts/", list_experts_seed),
     path("disputes/", list_disputes_seed),
     path("notifications/", list_notifications),

@@ -28,17 +28,14 @@
 <body class="antialiased">
   <div class="max-w-5xl mx-auto px-4 py-8 space-y-6">
     <header class="flex items-center justify-between">
-  <a href="index.html" class="text-sm font-semibold text-primary hover:text-primary-light">Home</a>
-  <div class="flex items-center gap-2 text-sm font-semibold">
-    <a href="marketplace.html" class="px-3 py-2 rounded-lg border border-slate-600 hover:border-primary transition">Marketplace</a>
-    <a href="login.html" class="px-3 py-2 rounded-lg border border-slate-600 hover:border-primary transition">Log in</a>
-    <a href="signup.html" class="px-3 py-2 rounded-lg border border-slate-600 hover:border-primary transition">Sign up</a>
-    <a href="admin-login.html" class="px-3 py-2 rounded-lg border border-amber-400 text-amber-200 hover:border-white transition">Admin</a>
-  </div>
-  <footer class="max-w-5xl mx-auto px-4 pb-8 text-xs text-slate-400">
-    ACTIVATE Skills and Service Marketplace | Ghana
-  </footer>
-</header>
+      <a id="back-link" href="index.html" class="text-sm font-semibold text-primary hover:text-primary-light">Back to marketplace</a>
+      <div class="flex items-center gap-2 text-sm font-semibold">
+        <a href="marketplace.html" class="px-3 py-2 rounded-lg border border-slate-600 hover:border-primary transition">Marketplace</a>
+        <a href="login.html" class="px-3 py-2 rounded-lg border border-slate-600 hover:border-primary transition">Log in</a>
+        <a href="signup.html" class="px-3 py-2 rounded-lg border border-slate-600 hover:border-primary transition">Sign up</a>
+        <a href="admin-login.html" class="px-3 py-2 rounded-lg border border-amber-400 text-amber-200 hover:border-white transition">Admin</a>
+      </div>
+    </header>
 
     <div id="hero-card" class="card rounded-3xl overflow-hidden relative">
       <img id="hero-image" src="" alt="" class="w-full h-60 object-cover">
@@ -62,6 +59,11 @@
     </section>
   </div>
 
+  <footer class="max-w-5xl mx-auto px-4 pb-8 text-xs text-slate-400">
+    ACTIVATE Skills and Service Marketplace | Ghana
+  </footer>
+
+  <script src="config.js"></script>
   <script>
     const categoryData = [
       { name: 'Electricians', description: 'Solar, wiring, backup power, repairs', color: '#F6B01E', image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80' },
@@ -85,6 +87,10 @@
 
     const params = new URLSearchParams(window.location.search);
     const catName = params.get('cat');
+    const from = params.get('from');
+    const back = document.getElementById('back-link');
+    if (back && from) back.href = from;
+
     const category = categoryData.find(c => c.name.toLowerCase() === (catName || '').toLowerCase()) || categoryData[0];
 
     document.getElementById('hero-image').src = category.image;
@@ -95,32 +101,59 @@
     document.getElementById('cat-desc').textContent = category.description;
 
     const list = document.getElementById('cat-experts');
-    const filtered = expertData.filter(ex => ex.skills.map(s => s.toLowerCase()).includes(category.name.toLowerCase()));
-    if (!filtered.length) {
-      list.innerHTML = '<div class="card rounded-2xl p-6 text-center text-slate-200 col-span-full">No experts found yet for this skill.</div>';
-    } else {
-      list.innerHTML = filtered.map(expert => `
+    const API_BASE = window.API_BASE || 'http://127.0.0.1:8001/api';
+    const USE_API = params.get('data') === 'live';
+
+    const renderExperts = (experts) => {
+      if (!experts.length) {
+        list.innerHTML = '<div class="card rounded-2xl p-6 text-center text-slate-200 col-span-full">No experts found yet for this skill.</div>';
+        return;
+      }
+      list.innerHTML = experts.map(expert => `
         <article class="card rounded-2xl p-4 space-y-2">
           <div class="flex gap-3">
             <img src="${expert.photo}" alt="${expert.name}" class="w-14 h-14 rounded-xl object-cover">
             <div>
               <p class="text-sm text-slate-300">${expert.location}</p>
-              <a href="${expert.profileUrl}" class="font-semibold hover:text-primary">${expert.name}</a>
+              <a href="${expert.profileUrl}${from ? `&from=${encodeURIComponent(from)}` : ''}" class="font-semibold hover:text-primary">${expert.name}</a>
               <p class="text-sm text-slate-300">${expert.role}</p>
             </div>
           </div>
           <div class="flex items-center gap-2 flex-wrap text-xs">
             <span class="px-2 py-1 rounded-lg ${expert.verified ? 'bg-emerald-500/20 text-emerald-200' : 'bg-amber-500/20 text-amber-200'}">${expert.verified ? 'Verified' : 'Pending verify'}</span>
-            <span class="px-2 py-1 rounded-lg bg-white/10">${expert.rating} ★ · ${expert.jobs} jobs</span>
-            ${expert.skills.map(s => `<span class="px-2 py-1 rounded-lg bg-white/5 border border-white/10">${s}</span>`).join('')}
+            <span class="px-2 py-1 rounded-lg bg-white/10">${expert.rating} * - ${expert.jobs} jobs</span>
+            ${(expert.skills || []).map(s => `<span class="px-2 py-1 rounded-lg bg-white/5 border border-white/10">${s}</span>`).join('')}
           </div>
         </article>
       `).join('');
+    };
+
+    if (USE_API) {
+      fetch(`${API_BASE}/profiles/?role=expert&q=${encodeURIComponent(category.name)}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          const listData = Array.isArray(data) ? data : (data?.results || data?.data || []);
+          const mapped = listData.map(profile => ({
+            name: profile.username,
+            role: profile.role || 'Expert',
+            location: profile.location || 'Ghana',
+            verified: Boolean(profile.verified_id || profile.verified_trade || profile.verified_background),
+            photo: profile.avatar_url || 'images/IMG_6751.jpg',
+            profileUrl: `expert-profile.html?user=${profile.username}${from ? `&from=${encodeURIComponent(from)}` : ''}`,
+            skills: [category.name],
+            rating: profile.rating || 0,
+            jobs: profile.jobs || 0,
+          }));
+          renderExperts(mapped);
+        })
+        .catch(() => {
+          const filtered = expertData.filter(ex => ex.skills.map(s => s.toLowerCase()).includes(category.name.toLowerCase()));
+          renderExperts(filtered);
+        });
+    } else {
+      const filtered = expertData.filter(ex => ex.skills.map(s => s.toLowerCase()).includes(category.name.toLowerCase()));
+      renderExperts(filtered);
     }
   </script>
 </body>
 </html>
-
-
-
-

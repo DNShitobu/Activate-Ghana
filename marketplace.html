@@ -101,6 +101,7 @@
       </form>
       <div class="flex flex-wrap gap-2" id="product-filter"></div>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="product-list"></div>
+      <div id="product-pagination" data-pagination="products" class="flex flex-wrap items-center gap-2 text-sm"></div>
       <div id="products-table-section" class="hidden card rounded-2xl p-4 overflow-x-auto">
         <table class="min-w-full text-sm text-left">
           <thead>
@@ -179,6 +180,7 @@
       </form>
       <div class="flex flex-wrap gap-2" id="expert-filter"></div>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="expert-list"></div>
+      <div id="expert-pagination" data-pagination="experts" class="flex flex-wrap items-center gap-2 text-sm"></div>
       <div id="experts-table-section" class="hidden card rounded-2xl p-4 overflow-x-auto">
         <table class="min-w-full text-sm text-left">
           <thead>
@@ -218,6 +220,7 @@
         <button type="submit" class="rounded-xl px-4 py-3 bg-gradient-to-r from-primary via-pop-amber to-pop-pink text-night font-semibold hover:from-primary-light transition">Filter jobs</button>
       </form>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="job-list"></div>
+      <div id="job-pagination" data-pagination="jobs" class="flex flex-wrap items-center gap-2 text-sm"></div>
       <div id="jobs-table-section" class="hidden card rounded-2xl p-4 overflow-x-auto">
         <table class="min-w-full text-sm text-left">
           <thead>
@@ -234,6 +237,7 @@
     </section>
   </div>
 
+  <script src="config.js"></script>
   <script src="scripts.js"></script>
   <script>
     const isAuthed = Boolean(localStorage.getItem('jwt_access'));
@@ -253,6 +257,7 @@
   </script>
 </body>
 </html>
+
 
 
 

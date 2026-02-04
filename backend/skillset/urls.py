@@ -2,6 +2,8 @@ from pathlib import Path
 from django.contrib import admin
 from django.http import FileResponse, HttpResponseNotFound
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -23,5 +25,11 @@ urlpatterns = [
     path("", serve_index),
     path("admin/", admin.site.urls),
     path("api/", include("api.urls")),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += [
     path("<path:filepath>", serve_static),
 ]
