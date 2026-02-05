@@ -3,29 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data: https://images.unsplash.com https://unpkg.com https://*.tile.openstreetmap.org; script-src 'self' https://unpkg.com; style-src 'self' https://unpkg.com; connect-src 'self' http://127.0.0.1:8001 http://localhost:8001 https://activate-ghana-backend.onrender.com; font-src 'self' data:; form-action 'self' http://127.0.0.1:8001 http://localhost:8001 https://activate-ghana-backend.onrender.com">
   <title>Job Details | ACTIVATE Skills and Service Marketplace | Ghana</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: { DEFAULT: '#F68B1F', light: '#F6B01E', dark: '#F55203' },
-            accent: '#313131',
-            pop: { pink: '#F68B1F', lime: '#F6B01E', amber: '#F6B01E', violet: '#F55203' },
-            night: '#313131',
-            panel: '#F5F5F5',
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    body { background: #f8fafc; color: #0f172a; }
-    .card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); }
-  </style>
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/site.css">
 </head>
-<body class="antialiased">
+<body class="antialiased theme-light">
   <div class="max-w-4xl mx-auto px-4 py-8 space-y-6">
     <header class="flex items-center justify-between">
       <a id="back-link" href="index.html" class="text-sm font-semibold text-primary hover:text-primary-dark">Back to results</a>
@@ -47,45 +30,14 @@
   </div>
 
   <script src="config.js"></script>
-  <script>
-    const back = document.getElementById('back-link');
-    const params = new URLSearchParams(window.location.search);
-    const from = params.get('from');
-    if (back && from) back.href = from;
-    const id = params.get('id');
-    const card = document.getElementById('job-card');
-    const API_BASE = window.API_BASE || 'http://127.0.0.1:8001/api';
-    const USE_API = params.get('data') === 'live';
-
-    const jobData = {
-      'job-1': { title: 'Wire 2-bedroom apartment + solar changeover', location: 'Kasoa', budget: 'GHS 4,800', status: 'Applications open', description: 'Complete wiring, changeover to solar, safety checks.' },
-      'job-2': { title: 'Fix leaking bathroom + retile floor', location: 'Cape Coast', budget: 'GHS 2,100', status: 'Shortlisting', description: 'Seal leaks, replace tiles, ensure waterproofing.' },
-      'job-3': { title: 'Custom wardrobe & TV console', location: 'East Legon', budget: 'GHS 6,500', status: 'New', description: 'Built-in wardrobe and TV console with laminate finish.' },
-      'job-4': { title: 'School uniforms bulk order (120 pcs)', location: 'Tema', budget: 'GHS 8,900', status: 'Pre-funded escrow', description: 'Uniform stitching, fitting, delivery in 3 weeks.' },
-      'job-5': { title: 'Fleet maintenance (3 vans)', location: 'Kumasi', budget: 'GHS 3,200', status: 'Applications open', description: 'Diagnostics, servicing, minor bodywork.' },
-      'job-6': { title: 'Gate fabrication + install', location: 'Takoradi', budget: 'GHS 5,700', status: 'New', description: 'Metal gate fabrication, powder coat, on-site install.' },
-    };
-
-    const renderJob = (job) => {
-      if (!job) {
-        card.innerHTML = '<p class="text-slate-600">Job not found. Please return to the listings.</p>';
-        return;
-      }
-      document.getElementById('job-title').textContent = job.title;
-      document.getElementById('job-location').textContent = job.location || 'Ghana';
-      document.getElementById('job-budget').textContent = (job.budget || '').toString().includes('GHS') ? job.budget : `GHS ${job.budget}`;
-      document.getElementById('job-status').textContent = (job.status || '').replace(/_/g, ' ');
-      document.getElementById('job-description').textContent = job.description || '';
-    };
-
-    if (USE_API && id) {
-      fetch(`${API_BASE}/jobs/${id}/`)
-        .then(res => res.ok ? res.json() : null)
-        .then(data => renderJob(data))
-        .catch(() => renderJob(jobData[id]));
-    } else {
-      renderJob(jobData[id]);
-    }
-  </script>
+  <script src="job-detail.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+

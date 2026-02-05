@@ -1,0 +1,132 @@
+:root {
+  --body-bg: #f8fafc;
+  --body-color: #0f172a;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --glass-bg: #ffffff;
+  --glass-border: #e5e5e5;
+  --glass-shadow: 0 18px 70px rgba(0, 0, 0, 0.08);
+  --glow-ring: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 28px rgba(34, 211, 238, 0.35);
+  --card-backdrop: none;
+  --glass-backdrop: none;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: var(--card-backdrop);
+  -webkit-backdrop-filter: var(--card-backdrop);
+}
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+}
+
+.glow-ring {
+  box-shadow: var(--glow-ring);
+}
+
+body.theme-jumia {
+  --body-bg: #F5F5F5;
+  --body-color: #313131;
+  --card-border: #e5e5e5;
+  --card-shadow: 0 14px 48px rgba(0, 0, 0, 0.08);
+  --glass-border: #e5e5e5;
+  --glass-shadow: 0 18px 70px rgba(0, 0, 0, 0.08);
+  --glow-ring: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 28px rgba(34, 211, 238, 0.35);
+  background: var(--body-bg);
+  color: var(--body-color);
+}
+
+body.theme-dashboard {
+  --body-bg: #F5F5F5;
+  --body-color: #313131;
+  --card-border: #e5e5e5;
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  background: var(--body-bg);
+  color: var(--body-color);
+}
+
+body.theme-chat {
+  --body-bg: #F5F5F5;
+  --body-color: #313131;
+  --card-border: #e5e5e5;
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  background: var(--body-bg);
+  color: var(--body-color);
+}
+
+body.theme-light {
+  --body-bg: #f8fafc;
+  --body-color: #0f172a;
+  --card-border: #e2e8f0;
+  --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  background: var(--body-bg);
+  color: var(--body-color);
+}
+
+body.theme-admin-dashboard {
+  --body-bg: #f8fafc;
+  --body-color: #0f172a;
+  --card-border: #e2e8f0;
+  --card-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  background: var(--body-bg);
+  color: var(--body-color);
+}
+
+body.theme-light-soft {
+  --body-bg: #f7f7f7;
+  --body-color: #1f2937;
+  --card-border: #e5e7eb;
+  --card-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  background: var(--body-bg);
+  color: var(--body-color);
+}
+
+body.theme-admin-login {
+  --body-bg: #f7f7f7;
+  --body-color: #0f172a;
+  --glass-border: #e5e7eb;
+  --glass-shadow: 0 18px 60px rgba(15, 23, 42, 0.12);
+  --glow-ring: 0 0 0 1px rgba(15, 23, 42, 0.08), 0 0 24px rgba(246, 139, 31, 0.18);
+  background: var(--body-bg);
+  color: var(--body-color);
+}
+
+body.theme-category {
+  --body-bg: #313131;
+  --body-color: #e2e8f0;
+  --card-bg: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --card-shadow: 0 14px 48px rgba(0, 0, 0, 0.35);
+  --card-backdrop: blur(10px);
+  background: var(--body-bg);
+  color: var(--body-color);
+}
+
+body.theme-products {
+  --body-bg: radial-gradient(circle at 12% 20%, rgba(37, 99, 235, 0.22), transparent 35%),
+    radial-gradient(circle at 82% 10%, rgba(34, 211, 238, 0.15), transparent 28%),
+    linear-gradient(145deg, #F5F5F5 0%, #313131 50%, #FFFFFF 100%);
+  --body-color: #f8fafc;
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-shadow: 0 18px 70px rgba(0, 0, 0, 0.4);
+  --glass-backdrop: blur(12px);
+  --card-bg: rgba(255, 255, 255, 0.07);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --card-shadow: 0 14px 48px rgba(0, 0, 0, 0.35);
+  --card-backdrop: blur(10px);
+  background: var(--body-bg);
+  color: var(--body-color);
+}
+
+#map {
+  height: 70vh;
+}

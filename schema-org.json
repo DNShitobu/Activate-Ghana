@@ -1,0 +1,9 @@
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "ACTIVATE Skills and Service Marketplace | Ghana",
+  "areaServed": "Ghana",
+  "url": "https://example.com/",
+  "serviceType": ["Electrical", "Plumbing", "Carpentry", "Mechanics"],
+  "paymentAccepted": ["MobileMoney", "Card", "BankTransfer"]
+}

@@ -100,6 +100,53 @@ let activeProductCategory = 'All';
 let activeExpertCategory = 'All';
 let userLocation = null;
 
+const HTML_ESCAPES = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+};
+
+function escapeHtml(value) {
+  if (value === null || value === undefined) return '';
+  return String(value).replace(/[&<>"']/g, (ch) => HTML_ESCAPES[ch]);
+}
+
+function safeUrl(value) {
+  const url = String(value || '').trim();
+  if (!url) return '';
+  const lower = url.toLowerCase();
+  if (lower.startsWith('javascript:') || lower.startsWith('data:') || lower.startsWith('vbscript:')) return '';
+  if (lower.startsWith('http://') || lower.startsWith('https://')) return url;
+  if (lower.startsWith('/') || lower.startsWith('./') || lower.startsWith('../') || lower.startsWith('#')) return url;
+  if (lower.startsWith('//') || lower.includes('://')) return '';
+  return url;
+}
+
+function safeLink(base, suffix = '') {
+  const url = safeUrl(base);
+  if (!url) return '#';
+  return `${url}${suffix || ''}`;
+}
+
+function safeLocalPath(value, fallback = '') {
+  const url = safeUrl(value);
+  if (!url) return fallback;
+  const lower = url.toLowerCase();
+  if (lower.startsWith('http://') || lower.startsWith('https://') || lower.startsWith('//')) return fallback;
+  return url;
+}
+
+function safeCssColor(value, fallback = '#F68B1F') {
+  const color = String(value || '').trim();
+  if (!color) return fallback;
+  if (/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(color)) return color;
+  if (/^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}(\s*,\s*(0|1|0?\.\d+))?\s*\)$/i.test(color)) return color;
+  if (/^hsla?\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%(\s*,\s*(0|1|0?\.\d+))?\s*\)$/i.test(color)) return color;
+  return fallback;
+}
+
 let disputes = [
   { id: '#D-1042', topic: 'Tile quality vs spec', status: 'Under review', action: 'freeze_wallet', amount: 'GHS 3,200' },
   { id: '#D-1038', topic: 'Delayed rewiring', status: 'Split funds proposed', action: 'split_funds', amount: 'GHS 2,450' },
@@ -223,8 +270,8 @@ function renderChatUI() {
         const last = thread.messages[thread.messages.length - 1];
         return `
           <button class="w-full text-left p-3 rounded-xl border ${id === activeId ? 'border-primary bg-primary/10' : 'border-slate-200'}" data-chat-id="${id}">
-            <p class="text-sm font-semibold">${thread.title}</p>
-            <p class="text-xs text-slate-500">${last?.text || 'No messages yet'}</p>
+            <p class="text-sm font-semibold">${escapeHtml(thread.title)}</p>
+            <p class="text-xs text-slate-500">${escapeHtml(last?.text || 'No messages yet')}</p>
           </button>
         `;
       }).join('');
@@ -243,8 +290,8 @@ function renderChatUI() {
       messagesEl.innerHTML = thread.messages.map((msg) => `
         <div class="flex ${msg.sender === currentUser ? 'justify-end' : 'justify-start'}">
           <div class="max-w-[70%] rounded-2xl px-4 py-2 ${msg.sender === currentUser ? 'bg-primary text-white' : 'bg-slate-100 text-slate-800'}">
-            <p class="text-xs opacity-70">${msg.sender}</p>
-            <p class="text-sm">${msg.text}</p>
+            <p class="text-xs opacity-70">${escapeHtml(msg.sender)}</p>
+            <p class="text-sm">${escapeHtml(msg.text)}</p>
           </div>
         </div>
       `).join('');
@@ -328,8 +375,8 @@ function renderChatUI() {
       const title = (thread.participant_names || []).filter(n => n !== currentUser).join(' - ') || 'Chat';
       return `
         <button class="w-full text-left p-3 rounded-xl border ${thread.id === activeId ? 'border-primary bg-primary/10' : 'border-slate-200'}" data-chat-id="${thread.id}">
-          <p class="text-sm font-semibold">${title}</p>
-          <p class="text-xs text-slate-500">${last?.text || 'No messages yet'}</p>
+          <p class="text-sm font-semibold">${escapeHtml(title)}</p>
+          <p class="text-xs text-slate-500">${escapeHtml(last?.text || 'No messages yet')}</p>
         </button>
       `;
     }).join('');
@@ -349,8 +396,8 @@ function renderChatUI() {
     messagesEl.innerHTML = messages.map((msg) => `
       <div class="flex ${msg.sender_name === currentUser ? 'justify-end' : 'justify-start'}">
         <div class="max-w-[70%] rounded-2xl px-4 py-2 ${msg.sender_name === currentUser ? 'bg-primary text-white' : 'bg-slate-100 text-slate-800'}">
-          <p class="text-xs opacity-70">${msg.sender_name || 'User'}</p>
-          <p class="text-sm">${msg.text}</p>
+          <p class="text-xs opacity-70">${escapeHtml(msg.sender_name || 'User')}</p>
+          <p class="text-sm">${escapeHtml(msg.text)}</p>
         </div>
       </div>
     `).join('');
@@ -494,11 +541,13 @@ function renderCategories() {
   const liveParam = USE_API ? '&data=live' : '';
   grid.innerHTML = categoryData.slice(0, 6).map(cat => `
     <a href="category.html?cat=${encodeURIComponent(cat.name)}&from=${fromParam}${liveParam}" class="card rounded-2xl overflow-hidden block hover:-translate-y-1 transition transform">
-      <div class="h-32 bg-cover bg-center" style="background-image:url('${cat.image}')"></div>
+      <div class="h-32 overflow-hidden">
+        <img src="${safeUrl(cat.image)}" alt="${escapeHtml(cat.name)}" class="w-full h-full object-cover" loading="lazy">
+      </div>
       <div class="p-4 space-y-1">
-        <p class="text-xs uppercase tracking-wide" style="color:${cat.color}">${cat.name}</p>
-        <p class="font-semibold text-lg">${cat.description}</p>
-        <p class="text-sm text-primary-light inline-flex items-center gap-1">Tap to view experts <span aria-hidden="true">→</span></p>
+        <p class="text-xs uppercase tracking-wide text-primary">${escapeHtml(cat.name)}</p>
+        <p class="font-semibold text-lg">${escapeHtml(cat.description)}</p>
+        <p class="text-sm text-primary-light inline-flex items-center gap-1">Tap to view experts <span aria-hidden="true">&rarr;</span></p>
       </div>
     </a>
   `).join('');
@@ -540,16 +589,16 @@ async function renderExperts(filter = 'All', skillText = '', locationText = '') 
         location: profile.location || 'Ghana',
         verified: Boolean(profile.verified_id || profile.verified_trade || profile.verified_background),
         photo: profile.avatar_url || 'images/IMG_6751.jpg',
-        profileUrl: `expert-profile.html?user=${profile.username}`,
+        profileUrl: `expert-profile.html?user=${encodeURIComponent(profile.username)}`,
       }));
       list.innerHTML = mapped.map(expert => `
         <article class="card rounded-2xl p-4 space-y-2">
           <div class="flex gap-3">
-            <img src="${expert.photo}" alt="${expert.name}" class="w-14 h-14 rounded-xl object-cover" loading="lazy">
+            <img src="${safeUrl(expert.photo)}" alt="${escapeHtml(expert.name)}" class="w-14 h-14 rounded-xl object-cover" loading="lazy">
             <div>
-              <p class="text-sm text-slate-300">${expert.location}</p>
-              <a href="${expert.profileUrl}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#experts')}` : ''}" class="font-semibold hover:text-primary">${expert.name}</a>
-              <p class="text-sm text-slate-300">${expert.role}</p>
+              <p class="text-sm text-slate-300">${escapeHtml(expert.location)}</p>
+              <a href="${safeLink(expert.profileUrl, LIVE_QS + (window.location.pathname.includes('marketplace') ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#experts') : ''))}" class="font-semibold hover:text-primary">${escapeHtml(expert.name)}</a>
+              <p class="text-sm text-slate-300">${escapeHtml(expert.role)}</p>
             </div>
           </div>
           <div class="flex items-center gap-2 flex-wrap text-xs">
@@ -560,9 +609,9 @@ async function renderExperts(filter = 'All', skillText = '', locationText = '') 
       if (tableBody) {
         tableBody.innerHTML = mapped.map(expert => `
           <tr class="border-b border-slate-700/40">
-            <td class="px-4 py-3"><a href="${expert.profileUrl}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#experts')}` : ''}" class="text-primary hover:underline">${expert.name}</a></td>
-            <td class="px-4 py-3 text-slate-200">${expert.role}</td>
-            <td class="px-4 py-3 text-slate-200">${expert.location}</td>
+            <td class="px-4 py-3"><a href="${safeLink(expert.profileUrl, LIVE_QS + (window.location.pathname.includes('marketplace') ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#experts') : ''))}" class="text-primary hover:underline">${escapeHtml(expert.name)}</a></td>
+            <td class="px-4 py-3 text-slate-200">${escapeHtml(expert.role)}</td>
+            <td class="px-4 py-3 text-slate-200">${escapeHtml(expert.location)}</td>
             <td class="px-4 py-3 text-slate-200">${expert.verified ? 'Verified' : 'Pending'}</td>
           </tr>
         `).join('');
@@ -595,29 +644,29 @@ async function renderExperts(filter = 'All', skillText = '', locationText = '') 
   list.innerHTML = filtered.map(expert => `
     <article class="card rounded-2xl p-4 space-y-2">
       <div class="flex gap-3">
-        <img src="${expert.photo}" alt="${expert.name}" class="w-14 h-14 rounded-xl object-cover" loading="lazy">
+        <img src="${safeUrl(expert.photo)}" alt="${escapeHtml(expert.name)}" class="w-14 h-14 rounded-xl object-cover" loading="lazy">
         <div>
-          <p class="text-sm text-slate-300">${expert.location}</p>
-          <a href="${expert.profileUrl}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#experts')}` : ''}" class="font-semibold hover:text-primary">${expert.name}</a>
-          <p class="text-sm text-slate-300">${expert.role}</p>
+          <p class="text-sm text-slate-300">${escapeHtml(expert.location)}</p>
+          <a href="${safeLink(expert.profileUrl, LIVE_QS + (window.location.pathname.includes('marketplace') ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#experts') : ''))}" class="font-semibold hover:text-primary">${escapeHtml(expert.name)}</a>
+          <p class="text-sm text-slate-300">${escapeHtml(expert.role)}</p>
         </div>
       </div>
       <div class="flex items-center gap-2 flex-wrap text-xs">
         <span class="px-2 py-1 rounded-lg ${expert.verified ? 'bg-emerald-500/20 text-emerald-200' : 'bg-amber-500/20 text-amber-200'}">${expert.verified ? 'Verified' : 'Pending verify'}</span>
-        <span class="px-2 py-1 rounded-lg bg-white/10">${expert.rating} ★ · ${expert.jobs} jobs</span>
-        ${expert.skills.map(s => `<span class="px-2 py-1 rounded-lg bg-white/5 border border-white/10">${s}</span>`).join('')}
+        <span class="px-2 py-1 rounded-lg bg-white/10">${escapeHtml(expert.rating)} &#9733; &middot; ${escapeHtml(expert.jobs)} jobs</span>
+      ${(expert.skills || []).map(s => `<span class="px-2 py-1 rounded-lg bg-white/5 border border-white/10">${escapeHtml(s)}</span>`).join('')}
       </div>
-      ${expert.portfolio ? `<div class="flex gap-2">${expert.portfolio.slice(0,2).map(p => `<img src="${p}" loading="lazy" alt="Portfolio item" class="w-16 h-16 rounded-lg object-cover border border-white/10">`).join('')}</div>` : ''}
-      ${expert.rate_min ? `<p class="text-xs text-slate-300">Typical: GHS ${expert.rate_min}-${expert.rate_max || expert.rate_min}</p>` : ''}
+      ${expert.portfolio ? `<div class="flex gap-2">${expert.portfolio.slice(0,2).map(p => `<img src="${safeUrl(p)}" loading="lazy" alt="Portfolio item" class="w-16 h-16 rounded-lg object-cover border border-white/10">`).join('')}</div>` : ''}
+      ${expert.rate_min ? `<p class="text-xs text-slate-300">Typical: GHS ${escapeHtml(expert.rate_min)}-${escapeHtml(expert.rate_max || expert.rate_min)}</p>` : ''}
     </article>
   `).join('');
   if (tableBody) {
     tableBody.innerHTML = filtered.map(expert => `
       <tr class="border-b border-slate-700/40">
-        <td class="px-4 py-3"><a href="${expert.profileUrl}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#experts')}` : ''}" class="text-primary hover:underline">${expert.name}</a></td>
-        <td class="px-4 py-3 text-slate-200">${expert.role}</td>
-        <td class="px-4 py-3 text-slate-200">${expert.location}</td>
-        <td class="px-4 py-3 text-slate-200">${expert.rating} / 5</td>
+        <td class="px-4 py-3"><a href="${safeLink(expert.profileUrl, LIVE_QS + (window.location.pathname.includes('marketplace') ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#experts') : ''))}" class="text-primary hover:underline">${escapeHtml(expert.name)}</a></td>
+        <td class="px-4 py-3 text-slate-200">${escapeHtml(expert.role)}</td>
+        <td class="px-4 py-3 text-slate-200">${escapeHtml(expert.location)}</td>
+        <td class="px-4 py-3 text-slate-200">${escapeHtml(expert.rating)} / 5</td>
       </tr>
     `).join('');
   }
@@ -628,7 +677,7 @@ function renderExpertFilter(active = activeExpertCategory || 'All') {
   const filter = document.getElementById('expert-filter');
   if (!filter) return;
   filter.innerHTML = ['All', ...new Set(categoryData.map(c => c.name))].map(name => `
-    <button class="px-3 py-2 rounded-full border ${active === name ? 'border-primary bg-primary/20 text-primary' : 'border-white/20'} text-sm font-semibold" data-cat="${name}">${name}</button>
+    <button class="px-3 py-2 rounded-full border ${active === name ? 'border-primary bg-primary/20 text-primary' : 'border-white/20'} text-sm font-semibold" data-cat="${encodeURIComponent(name)}">${escapeHtml(name)}</button>
   `).join('');
 }
 
@@ -670,16 +719,18 @@ async function renderJobs(text = '', locationText = '', status = 'All') {
         budget: `GHS ${job.budget}`,
         status: (job.status || '').replace(/_/g, ' '),
         image: job.image || 'images/IMG_6854.jpg',
-        url: `job-detail.html?id=${job.id}`,
+        url: `job-detail.html?id=${encodeURIComponent(job.id)}`,
       }));
       list.innerHTML = mapped.map(job => `
         <article class="card rounded-2xl overflow-hidden">
-          <div class="h-36 bg-cover bg-center" style="background-image:url('${job.image}')" loading="lazy"></div>
+          <div class="h-36 overflow-hidden">
+            <img src="${safeUrl(job.image)}" alt="${escapeHtml(job.title)}" class="w-full h-full object-cover" loading="lazy">
+          </div>
           <div class="p-4 space-y-1">
-            <p class="text-xs uppercase tracking-wide text-slate-300">${job.location}</p>
-            <a href="${job.url}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#jobs')}` : ''}" class="font-semibold text-lg hover:text-primary">${job.title}</a>
-            <p class="text-sm text-slate-300">${job.budget}</p>
-            <span class="px-2 py-1 rounded-lg bg-primary/20 text-primary text-xs font-semibold">${job.status}</span>
+            <p class="text-xs uppercase tracking-wide text-slate-300">${escapeHtml(job.location)}</p>
+            <a href="${safeLink(job.url, LIVE_QS + (window.location.pathname.includes('marketplace') ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#jobs') : ''))}" class="font-semibold text-lg hover:text-primary">${escapeHtml(job.title)}</a>
+            <p class="text-sm text-slate-300">${escapeHtml(job.budget)}</p>
+            <span class="px-2 py-1 rounded-lg bg-primary/20 text-primary text-xs font-semibold">${escapeHtml(job.status)}</span>
           </div>
         </article>
       `).join('');
@@ -687,10 +738,10 @@ async function renderJobs(text = '', locationText = '', status = 'All') {
       if (tableBody) {
         tableBody.innerHTML = mapped.map(job => `
           <tr class="border-b border-slate-100 hover:bg-slate-50">
-            <td class="px-4 py-3"><a href="${job.url}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#jobs')}` : ''}" class="text-primary hover:underline">${job.title}</a></td>
-            <td class="px-4 py-3 text-slate-600">${job.location}</td>
-            <td class="px-4 py-3 text-slate-600">${job.budget}</td>
-            <td class="px-4 py-3 text-slate-600">${job.status}</td>
+            <td class="px-4 py-3"><a href="${safeLink(job.url, LIVE_QS + (window.location.pathname.includes('marketplace') ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#jobs') : ''))}" class="text-primary hover:underline">${escapeHtml(job.title)}</a></td>
+            <td class="px-4 py-3 text-slate-600">${escapeHtml(job.location)}</td>
+            <td class="px-4 py-3 text-slate-600">${escapeHtml(job.budget)}</td>
+            <td class="px-4 py-3 text-slate-600">${escapeHtml(job.status)}</td>
           </tr>
         `).join('');
       }
@@ -714,12 +765,14 @@ async function renderJobs(text = '', locationText = '', status = 'All') {
   }
   list.innerHTML = filtered.map(job => `
     <article class="card rounded-2xl overflow-hidden">
-      <div class="h-36 bg-cover bg-center" style="background-image:url('${job.image}')" loading="lazy"></div>
+      <div class="h-36 overflow-hidden">
+        <img src="${safeUrl(job.image)}" alt="${escapeHtml(job.title)}" class="w-full h-full object-cover" loading="lazy">
+      </div>
       <div class="p-4 space-y-1">
-        <p class="text-xs uppercase tracking-wide text-slate-300">${job.location}</p>
-        <a href="${job.url}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#jobs')}` : ''}" class="font-semibold text-lg hover:text-primary">${job.title}</a>
-        <p class="text-sm text-slate-300">${job.budget}</p>
-        <span class="px-2 py-1 rounded-lg bg-primary/20 text-primary text-xs font-semibold">${job.status}</span>
+        <p class="text-xs uppercase tracking-wide text-slate-300">${escapeHtml(job.location)}</p>
+        <a href="${safeLink(job.url, LIVE_QS + (window.location.pathname.includes('marketplace') ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#jobs') : ''))}" class="font-semibold text-lg hover:text-primary">${escapeHtml(job.title)}</a>
+        <p class="text-sm text-slate-300">${escapeHtml(job.budget)}</p>
+        <span class="px-2 py-1 rounded-lg bg-primary/20 text-primary text-xs font-semibold">${escapeHtml(job.status)}</span>
       </div>
     </article>
   `).join('');
@@ -728,10 +781,10 @@ async function renderJobs(text = '', locationText = '', status = 'All') {
   if (tableBody) {
     tableBody.innerHTML = filtered.map(job => `
       <tr class="border-b border-slate-100 hover:bg-slate-50">
-        <td class="px-4 py-3"><a href="${job.url}${LIVE_QS}${window.location.pathname.includes('marketplace') ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#jobs')}` : ''}" class="text-primary hover:underline">${job.title}</a></td>
-        <td class="px-4 py-3 text-slate-600">${job.location}</td>
-        <td class="px-4 py-3 text-slate-600">${job.budget}</td>
-        <td class="px-4 py-3 text-slate-600">${job.status}</td>
+        <td class="px-4 py-3"><a href="${safeLink(job.url, LIVE_QS + (window.location.pathname.includes('marketplace') ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#jobs') : ''))}" class="text-primary hover:underline">${escapeHtml(job.title)}</a></td>
+        <td class="px-4 py-3 text-slate-600">${escapeHtml(job.location)}</td>
+        <td class="px-4 py-3 text-slate-600">${escapeHtml(job.budget)}</td>
+        <td class="px-4 py-3 text-slate-600">${escapeHtml(job.status)}</td>
       </tr>
     `).join('');
   }
@@ -757,7 +810,7 @@ function renderProductFilters(active = activeProductCategory || 'All') {
   if (!filter) return;
   const categories = ['All', ...new Set(getAllProducts().map(p => p.category))];
   filter.innerHTML = categories.map(name => `
-    <button class="px-3 py-2 rounded-full border ${active === name ? 'border-primary bg-primary/20 text-primary' : 'border-white/20'} text-sm font-semibold" data-prod-cat="${name}">${name}</button>
+    <button class="px-3 py-2 rounded-full border ${active === name ? 'border-primary bg-primary/20 text-primary' : 'border-white/20'} text-sm font-semibold" data-prod-cat="${encodeURIComponent(name)}">${escapeHtml(name)}</button>
   `).join('');
 }
 
@@ -781,8 +834,8 @@ async function renderProducts(filter = 'All', query = '', locationText = '', max
       const results = data.results || [];
       const mapped = results.map(product => ({
         ...product,
-        url: `product-detail.html?id=${product.id}`,
-        sellerUrl: product.seller_name ? `seller-profile.html?user=${product.seller_name}` : '#',
+        url: `product-detail.html?id=${encodeURIComponent(product.id)}`,
+        sellerUrl: product.seller_name ? `seller-profile.html?user=${encodeURIComponent(product.seller_name)}` : '#',
       }));
       if (list) {
         if (!mapped.length) {
@@ -790,13 +843,13 @@ async function renderProducts(filter = 'All', query = '', locationText = '', max
         } else {
           list.innerHTML = mapped.map(product => `
             <article class="card rounded-2xl overflow-hidden">
-              <img src="${product.image_url || product.image || ''}" alt="${product.name}" class="w-full h-40 object-cover" loading="lazy">
+              <img src="${safeUrl(product.image_url || product.image || '')}" alt="${escapeHtml(product.name)}" class="w-full h-40 object-cover" loading="lazy">
               <div class="p-4 space-y-2">
-                <p class="text-xs uppercase tracking-wide text-slate-300">${product.category}</p>
-            <a href="${product.url}${LIVE_QS}${(window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#products')}` : ''}" class="font-semibold text-lg hover:text-primary">${product.name}</a>
-                <p class="text-sm text-slate-300">GHS ${product.price} · ${product.unit} · Qty ${product.quantity}</p>
-                <p class="text-sm text-slate-400">${product.location}</p>
-                <p class="text-sm text-slate-300">Seller: <a href="${product.sellerUrl}" class="text-primary-light hover:text-white">${product.seller || product.seller_name || 'Seller'}</a></p>
+                <p class="text-xs uppercase tracking-wide text-slate-300">${escapeHtml(product.category)}</p>
+                <a href="${safeLink(product.url, LIVE_QS + ((window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#products') : ''))}" class="font-semibold text-lg hover:text-primary">${escapeHtml(product.name)}</a>
+                <p class="text-sm text-slate-300">GHS ${escapeHtml(product.price)} · ${escapeHtml(product.unit)} · Qty ${escapeHtml(product.quantity)}</p>
+                <p class="text-sm text-slate-400">${escapeHtml(product.location)}</p>
+                <p class="text-sm text-slate-300">Seller: <a href="${safeUrl(product.sellerUrl) || '#'}" class="text-primary-light hover:text-white">${escapeHtml(product.seller || product.seller_name || 'Seller')}</a></p>
               </div>
             </article>
           `).join('');
@@ -805,12 +858,12 @@ async function renderProducts(filter = 'All', query = '', locationText = '', max
       if (tableBody) {
         tableBody.innerHTML = mapped.map(product => `
           <tr class="border-b border-slate-700/40">
-            <td class="px-4 py-3"><a href="${product.url}${LIVE_QS}${(window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#products')}` : ''}" class="text-primary hover:underline">${product.name}</a></td>
-            <td class="px-4 py-3 text-slate-200">${product.category}</td>
-            <td class="px-4 py-3 text-slate-200">GHS ${product.price} / ${product.unit}</td>
-            <td class="px-4 py-3 text-slate-200">${product.quantity}</td>
-            <td class="px-4 py-3 text-slate-200">${product.location}</td>
-            <td class="px-4 py-3"><a href="${product.sellerUrl}" class="text-primary hover:underline">${product.seller || product.seller_name || 'Seller'}</a></td>
+            <td class="px-4 py-3"><a href="${safeLink(product.url, LIVE_QS + ((window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#products') : ''))}" class="text-primary hover:underline">${escapeHtml(product.name)}</a></td>
+            <td class="px-4 py-3 text-slate-200">${escapeHtml(product.category)}</td>
+            <td class="px-4 py-3 text-slate-200">GHS ${escapeHtml(product.price)} / ${escapeHtml(product.unit)}</td>
+            <td class="px-4 py-3 text-slate-200">${escapeHtml(product.quantity)}</td>
+            <td class="px-4 py-3 text-slate-200">${escapeHtml(product.location)}</td>
+            <td class="px-4 py-3"><a href="${safeUrl(product.sellerUrl) || '#'}" class="text-primary hover:underline">${escapeHtml(product.seller || product.seller_name || 'Seller')}</a></td>
           </tr>
         `).join('');
       }
@@ -834,13 +887,13 @@ async function renderProducts(filter = 'All', query = '', locationText = '', max
     } else {
       list.innerHTML = filtered.map(product => `
         <article class="card rounded-2xl overflow-hidden">
-          <img src="${product.image || product.image_url || ''}" alt="${product.name}" class="w-full h-40 object-cover" loading="lazy">
+          <img src="${safeUrl(product.image || product.image_url || '')}" alt="${escapeHtml(product.name)}" class="w-full h-40 object-cover" loading="lazy">
           <div class="p-4 space-y-2">
-            <p class="text-xs uppercase tracking-wide text-slate-300">${product.category}</p>
-            <a href="${product.url}${LIVE_QS}${(window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#products')}` : ''}" class="font-semibold text-lg hover:text-primary">${product.name}</a>
-            <p class="text-sm text-slate-300">GHS ${product.price} · ${product.unit} · Qty ${product.quantity}</p>
-            <p class="text-sm text-slate-400">${product.location}</p>
-            <p class="text-sm text-slate-300">Seller: <a href="${product.sellerUrl || '#'}" class="text-primary-light hover:text-white">${product.seller || product.seller_name || 'Seller'}</a></p>
+            <p class="text-xs uppercase tracking-wide text-slate-300">${escapeHtml(product.category)}</p>
+            <a href="${safeLink(product.url, LIVE_QS + ((window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#products') : ''))}" class="font-semibold text-lg hover:text-primary">${escapeHtml(product.name)}</a>
+            <p class="text-sm text-slate-300">GHS ${escapeHtml(product.price)} · ${escapeHtml(product.unit)} · Qty ${escapeHtml(product.quantity)}</p>
+            <p class="text-sm text-slate-400">${escapeHtml(product.location)}</p>
+            <p class="text-sm text-slate-300">Seller: <a href="${safeUrl(product.sellerUrl) || '#'}" class="text-primary-light hover:text-white">${escapeHtml(product.seller || product.seller_name || 'Seller')}</a></p>
           </div>
         </article>
       `).join('');
@@ -849,12 +902,12 @@ async function renderProducts(filter = 'All', query = '', locationText = '', max
   if (tableBody) {
     tableBody.innerHTML = filtered.map(product => `
       <tr class="border-b border-slate-700/40">
-        <td class="px-4 py-3"><a href="${product.url}${LIVE_QS}${(window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#products')}` : ''}" class="text-primary hover:underline">${product.name}</a></td>
-        <td class="px-4 py-3 text-slate-200">${product.category}</td>
-        <td class="px-4 py-3 text-slate-200">GHS ${product.price} / ${product.unit}</td>
-        <td class="px-4 py-3 text-slate-200">${product.quantity}</td>
-        <td class="px-4 py-3 text-slate-200">${product.location}</td>
-        <td class="px-4 py-3"><a href="${product.sellerUrl || '#'}" class="text-primary hover:underline">${product.seller || product.seller_name || 'Seller'}</a></td>
+        <td class="px-4 py-3"><a href="${safeLink(product.url, LIVE_QS + ((window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#products') : ''))}" class="text-primary hover:underline">${escapeHtml(product.name)}</a></td>
+        <td class="px-4 py-3 text-slate-200">${escapeHtml(product.category)}</td>
+        <td class="px-4 py-3 text-slate-200">GHS ${escapeHtml(product.price)} / ${escapeHtml(product.unit)}</td>
+        <td class="px-4 py-3 text-slate-200">${escapeHtml(product.quantity)}</td>
+        <td class="px-4 py-3 text-slate-200">${escapeHtml(product.location)}</td>
+        <td class="px-4 py-3"><a href="${safeUrl(product.sellerUrl) || '#'}" class="text-primary hover:underline">${escapeHtml(product.seller || product.seller_name || 'Seller')}</a></td>
       </tr>
     `).join('');
   }
@@ -872,8 +925,8 @@ async function renderProductDetail() {
         const direct = await res.json();
         product = {
           ...direct,
-          url: `product-detail.html?id=${direct.id}`,
-          sellerUrl: direct.seller_name ? `seller-profile.html?user=${direct.seller_name}` : '#',
+          url: `product-detail.html?id=${encodeURIComponent(direct.id)}`,
+          sellerUrl: direct.seller_name ? `seller-profile.html?user=${encodeURIComponent(direct.seller_name)}` : '#',
         };
       }
     } catch (err) {
@@ -881,19 +934,19 @@ async function renderProductDetail() {
     }
   }
   if (!product) return;
-  const sellerName = product.seller || product.seller_name || 'Seller';
-  const sellerPhone = product.sellerPhone || product.contact_phone || '';
-  const sellerEmail = product.sellerEmail || product.contact_email || '';
+  const sellerName = escapeHtml(product.seller || product.seller_name || 'Seller');
+  const sellerPhone = escapeHtml(product.sellerPhone || product.contact_phone || '');
+  const sellerEmail = escapeHtml(product.sellerEmail || product.contact_email || '');
   wrap.innerHTML = `
     <div class="card rounded-3xl overflow-hidden">
-      <img src="${product.image || product.image_url || ''}" alt="${product.name}" class="w-full h-72 object-cover">
+      <img src="${safeUrl(product.image || product.image_url || '')}" alt="${escapeHtml(product.name)}" class="w-full h-72 object-cover">
       <div class="p-6 space-y-3">
-        <p class="text-xs uppercase tracking-wide text-slate-500">${product.category}</p>
-        <h1 class="text-2xl font-bold">${product.name}</h1>
-        <p class="text-slate-600">Price: <span class="font-semibold">GHS ${product.price}</span> per ${product.unit}</p>
-        <p class="text-slate-600">Available quantity: <span class="font-semibold">${product.quantity}</span></p>
-        <p class="text-slate-600">Location: ${product.location}</p>
-        <p class="text-slate-600">Seller: <a href="${product.sellerUrl || '#'}" class="text-primary hover:underline">${sellerName}</a></p>
+        <p class="text-xs uppercase tracking-wide text-slate-500">${escapeHtml(product.category)}</p>
+        <h1 class="text-2xl font-bold">${escapeHtml(product.name)}</h1>
+        <p class="text-slate-600">Price: <span class="font-semibold">GHS ${escapeHtml(product.price)}</span> per ${escapeHtml(product.unit)}</p>
+        <p class="text-slate-600">Available quantity: <span class="font-semibold">${escapeHtml(product.quantity)}</span></p>
+        <p class="text-slate-600">Location: ${escapeHtml(product.location)}</p>
+        <p class="text-slate-600">Seller: <a href="${safeUrl(product.sellerUrl) || '#'}" class="text-primary hover:underline">${sellerName}</a></p>
         <div class="flex flex-wrap gap-2">
           <button id="contact-seller-btn" class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">Contact seller</button>
           <button id="bulk-quote-btn" class="px-4 py-2 rounded-lg border border-slate-300 font-semibold">Request bulk quote</button>
@@ -903,7 +956,7 @@ async function renderProductDetail() {
             <p class="text-sm font-semibold">Seller contact details</p>
             <p class="text-sm text-slate-600">Phone: <span class="font-semibold">${sellerPhone || 'Available after request'}</span></p>
             <p class="text-sm text-slate-600">Email: <span class="font-semibold">${sellerEmail || 'Available after request'}</span></p>
-            <p class="text-sm text-slate-600">Location: <span class="font-semibold">${product.location}</span></p>
+            <p class="text-sm text-slate-600">Location: <span class="font-semibold">${escapeHtml(product.location)}</span></p>
             <div class="pt-2">
               <button id="chat-seller-btn" type="button" class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">Chat seller</button>
               <span class="text-xs text-slate-500 ml-2">Login required for chat.</span>
@@ -1060,17 +1113,17 @@ async function renderExpertProfile() {
   }
   wrap.innerHTML = `
     <div class="flex flex-col md:flex-row gap-4">
-      <img src="${target.photo}" alt="${target.name}" class="w-24 h-24 rounded-xl object-cover">
+      <img src="${safeUrl(target.photo)}" alt="${escapeHtml(target.name)}" class="w-24 h-24 rounded-xl object-cover">
       <div class="space-y-1">
-        <p class="text-xs uppercase tracking-wide text-slate-500">${target.location}</p>
-        <h1 class="text-2xl font-bold">${target.name}</h1>
-        <p class="text-slate-600">${target.role}</p>
-        <p class="text-sm text-slate-500">${target.rating || 0} * - ${target.jobs || 0} jobs</p>
+        <p class="text-xs uppercase tracking-wide text-slate-500">${escapeHtml(target.location)}</p>
+        <h1 class="text-2xl font-bold">${escapeHtml(target.name)}</h1>
+        <p class="text-slate-600">${escapeHtml(target.role)}</p>
+        <p class="text-sm text-slate-500">${escapeHtml(target.rating || 0)} &#9733; - ${escapeHtml(target.jobs || 0)} jobs</p>
       </div>
     </div>
     ${(target.skills && target.skills.length) ? `
     <div class="flex flex-wrap gap-2">
-      ${(target.skills || []).map(s => `<span class="px-2 py-1 rounded-lg bg-slate-100 text-sm">${s}</span>`).join('')}
+      ${(target.skills || []).map(s => `<span class="px-2 py-1 rounded-lg bg-slate-100 text-sm">${escapeHtml(s)}</span>`).join('')}
     </div>` : ''}
     <div class="flex gap-2">
       <a href="chat.html?new=${encodeURIComponent(target.name)}" class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">Message expert</a>
@@ -1084,9 +1137,9 @@ function renderSellerProfile() {
   if (!wrap) return;
   const sellerId = new URLSearchParams(window.location.search).get('user');
   const products = getAllProducts().filter(p => p.sellerId === sellerId || p.seller === sellerId || p.seller_name === sellerId);
-  const sellerName = products[0]?.seller || products[0]?.seller_name || 'Seller';
-  const sellerPhone = products[0]?.sellerPhone || products[0]?.contact_phone || 'Available on request';
-  const sellerEmail = products[0]?.sellerEmail || products[0]?.contact_email || 'Available on request';
+  const sellerName = escapeHtml(products[0]?.seller || products[0]?.seller_name || 'Seller');
+  const sellerPhone = escapeHtml(products[0]?.sellerPhone || products[0]?.contact_phone || 'Available on request');
+  const sellerEmail = escapeHtml(products[0]?.sellerEmail || products[0]?.contact_email || 'Available on request');
   wrap.innerHTML = `
     <div class="card rounded-3xl p-6 space-y-2">
       <p class="text-xs uppercase tracking-wide text-slate-500">Seller profile</p>
@@ -1102,12 +1155,12 @@ function renderSellerProfile() {
   if (list) {
     list.innerHTML = products.map(product => `
       <article class="card rounded-2xl overflow-hidden">
-        <img src="${product.image || product.image_url || ''}" alt="${product.name}" class="w-full h-40 object-cover" loading="lazy">
+        <img src="${safeUrl(product.image || product.image_url || '')}" alt="${escapeHtml(product.name)}" class="w-full h-40 object-cover" loading="lazy">
         <div class="p-4 space-y-2">
-          <p class="text-xs uppercase tracking-wide text-slate-300">${product.category}</p>
-            <a href="${product.url}${LIVE_QS}${(window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? `&from=${encodeURIComponent(window.location.pathname + window.location.search + '#products')}` : ''}" class="font-semibold text-lg hover:text-primary">${product.name}</a>
-          <p class="text-sm text-slate-300">GHS ${product.price} - ${product.unit} - Qty ${product.quantity}</p>
-          <p class="text-sm text-slate-400">${product.location}</p>
+          <p class="text-xs uppercase tracking-wide text-slate-300">${escapeHtml(product.category)}</p>
+            <a href="${safeLink(product.url, LIVE_QS + ((window.location.pathname.includes('marketplace') || window.location.pathname.includes('products')) ? '&from=' + encodeURIComponent(window.location.pathname + window.location.search + '#products') : ''))}" class="font-semibold text-lg hover:text-primary">${escapeHtml(product.name)}</a>
+          <p class="text-sm text-slate-300">GHS ${escapeHtml(product.price)} - ${escapeHtml(product.unit)} - Qty ${escapeHtml(product.quantity)}</p>
+          <p class="text-sm text-slate-400">${escapeHtml(product.location)}</p>
         </div>
       </article>
     `).join('');
@@ -1140,13 +1193,13 @@ function renderDisputes() {
   list.innerHTML = disputes.map(d => `
     <article class="card rounded-2xl p-4 space-y-2">
       <div class="flex gap-2">
-        <span class="px-2 py-1 rounded-lg bg-amber-500/20 text-amber-200 text-xs">${d.status}</span>
-        <span class="px-2 py-1 rounded-lg bg-white/10 text-xs">${d.action}</span>
+        <span class="px-2 py-1 rounded-lg bg-amber-500/20 text-amber-200 text-xs">${escapeHtml(d.status)}</span>
+        <span class="px-2 py-1 rounded-lg bg-white/10 text-xs">${escapeHtml(d.action)}</span>
       </div>
-      <p class="font-semibold">${d.id}</p>
-      <p class="text-sm text-slate-300">${d.topic}</p>
-      <p class="text-xs text-slate-400">${d.amount}</p>
-      ${d.timer ? `<p class="text-xs text-slate-400">Auto-release in: ${d.timer}</p>` : ''}
+      <p class="font-semibold">${escapeHtml(d.id)}</p>
+      <p class="text-sm text-slate-300">${escapeHtml(d.topic)}</p>
+      <p class="text-xs text-slate-400">${escapeHtml(d.amount)}</p>
+      ${d.timer ? `<p class="text-xs text-slate-400">Auto-release in: ${escapeHtml(d.timer)}</p>` : ''}
     </article>
   `).join('');
 }
@@ -1157,31 +1210,30 @@ function renderReviews() {
   list.innerHTML = reviews.map(r => `
     <article class="card rounded-2xl p-4 space-y-2">
       <div class="flex gap-2">
-        <span class="px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-200 text-xs">${r.state || 'Published'}</span>
-        <span class="px-2 py-1 rounded-lg bg-white/10 text-xs">${r.contract}</span>
+        <span class="px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-200 text-xs">${escapeHtml(r.state || 'Published')}</span>
+        <span class="px-2 py-1 rounded-lg bg-white/10 text-xs">${escapeHtml(r.contract)}</span>
       </div>
-      <p class="font-semibold">${r.from} → ${r.to}</p>
-      <p class="text-sm text-slate-300">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</p>
-      <p class="text-sm">${r.text}</p>
-      ${r.evidence ? `<div class="flex gap-2">${r.evidence.slice(0,2).map(p => `<img src="${p}" loading="lazy" alt="Evidence" class="w-16 h-16 rounded-lg object-cover border border-white/10">`).join('')}</div>` : ''}
-      ${r.private_note ? `<p class="text-xs text-amber-200">Private note to admins: ${r.private_note}</p>` : ''}
+      <p class="font-semibold">${escapeHtml(r.from)} -> ${escapeHtml(r.to)}</p>
+      <p class="text-sm text-slate-300">Rating: ${escapeHtml(r.rating)} / 5</p>
+      <p class="text-sm">${escapeHtml(r.text)}</p>
+      ${r.evidence ? `<div class="flex gap-2">${r.evidence.slice(0,2).map(p => `<img src="${safeUrl(p)}" loading="lazy" alt="Evidence" class="w-16 h-16 rounded-lg object-cover border border-white/10">`).join('')}</div>` : ''}
+      ${r.private_note ? `<p class="text-xs text-amber-200">Private note to admins: ${escapeHtml(r.private_note)}</p>` : ''}
     </article>
   `).join('');
 }
-
 // Carousel
 function initCarousel() {
   const slidesContainer = document.getElementById('top-slides');
   const dotsContainer = document.getElementById('top-dots');
   if (!slidesContainer || !dotsContainer) return;
 
-  slidesContainer.innerHTML = heroSlides.map((slide) => `
-    <div class="min-w-full h-72 lg:h-96 relative">
-      <img src="${slide.image}" alt="${slide.title}" class="w-full h-full object-cover" loading="lazy">
+  slidesContainer.innerHTML = heroSlides.map((slide, idx) => `
+    <div class="absolute inset-0 opacity-0 transition-opacity duration-700 ${idx === 0 ? 'opacity-100' : 'pointer-events-none'}" data-slide-index="${idx}" aria-hidden="${idx === 0 ? 'false' : 'true'}">
+      <img src="${safeUrl(slide.image)}" alt="${escapeHtml(slide.title)}" class="w-full h-full object-cover" loading="lazy">
       <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20"></div>
       <div class="absolute bottom-5 left-5 right-5 space-y-2">
-        <p class="text-sm text-slate-200">${slide.text}</p>
-        <p class="text-xl lg:text-2xl font-semibold">${slide.title}</p>
+        <p class="text-sm text-slate-200">${escapeHtml(slide.text)}</p>
+        <p class="text-xl lg:text-2xl font-semibold">${escapeHtml(slide.title)}</p>
       </div>
     </div>
   `).join('');
@@ -1192,7 +1244,14 @@ function initCarousel() {
   let current = 0;
   const update = (idx) => {
     current = idx;
-    slidesContainer.style.transform = `translateX(-${idx * 100}%)`;
+    const slides = Array.from(slidesContainer.children);
+    slides.forEach((slide, i) => {
+      const active = i === idx;
+      slide.classList.toggle('opacity-100', active);
+      slide.classList.toggle('opacity-0', !active);
+      slide.classList.toggle('pointer-events-none', !active);
+      slide.setAttribute('aria-hidden', (!active).toString());
+    });
     dotsContainer.querySelectorAll('button').forEach((btn, i) => {
       btn.classList.toggle('!bg-white', i === idx);
     });
@@ -1215,7 +1274,7 @@ function wireFilters() {
       if (e.target.dataset.cat) {
         const skillVal = document.getElementById('expert-skill')?.value || document.getElementById('skill-input')?.value || '';
         const locVal = document.getElementById('expert-location')?.value || document.getElementById('location-input')?.value || '';
-        activeExpertCategory = e.target.dataset.cat;
+        activeExpertCategory = decodeURIComponent(e.target.dataset.cat || '');
         renderExpertFilter(activeExpertCategory);
         marketState.experts.page = 1;
         renderExperts(activeExpertCategory, skillVal, locVal);
@@ -1305,7 +1364,7 @@ function wireFilters() {
         const query = document.getElementById('product-query')?.value || '';
         const loc = document.getElementById('product-location')?.value || '';
         const max = Number(document.getElementById('product-max')?.value || 0);
-        activeProductCategory = e.target.dataset.prodCat;
+        activeProductCategory = decodeURIComponent(e.target.dataset.prodCat || '');
         renderProductFilters(activeProductCategory);
         marketState.products.page = 1;
         renderProducts(activeProductCategory, query, loc, max);
@@ -1385,6 +1444,7 @@ function init() {
   initCarousel();
   wireFilters();
   if (USE_API) loadRemoteData();
+  if (USE_API && document.querySelector('.auth-only')) validateAuthState();
   const langSelect = document.getElementById('lang-select');
   if (langSelect) {
     langSelect.addEventListener('change', () => applyLang(langSelect.value));
@@ -1416,20 +1476,42 @@ async function loadRemoteData() {
       if (!data) return;
       switch (endpoints[idx].key) {
         case 'experts':
-          expertData = data;
+          expertData = data.map(profile => ({
+            id: profile.username,
+            name: profile.username,
+            role: profile.role || 'Expert',
+            skills: profile.skills || [],
+            rating: profile.rating || 0,
+            jobs: profile.jobs || 0,
+            location: profile.location || 'Ghana',
+            verified: Boolean(profile.verified_id || profile.verified_trade || profile.verified_background),
+            photo: profile.avatar_url || 'images/IMG_6751.jpg',
+            profileUrl: `expert-profile.html?user=${encodeURIComponent(profile.username)}`,
+            rate_min: profile.rate_min,
+            rate_max: profile.rate_max,
+            available_in: profile.availability_days,
+          }));
           renderExpertFilter(activeExpertCategory);
           renderExperts(activeExpertCategory);
           renderExpertProfile();
           break;
         case 'jobs':
-          jobData = data;
+          jobData = data.map(job => ({
+            id: job.id,
+            title: job.title,
+            location: job.location || 'Ghana',
+            budget: (job.budget || '').toString().includes('GHS') ? job.budget : `GHS ${job.budget}`,
+            status: (job.status || '').replace(/_/g, ' '),
+            image: job.image || 'images/IMG_6854.jpg',
+            url: `job-detail.html?id=${encodeURIComponent(job.id)}`,
+          }));
           renderJobs();
           break;
         case 'products':
           productData = data.map(p => ({
             ...p,
-            url: `product-detail.html?id=${p.id}`,
-            sellerUrl: p.seller_name ? `seller-profile.html?user=${p.seller_name}` : (p.seller ? `seller-profile.html?user=${p.seller}` : ''),
+            url: `product-detail.html?id=${encodeURIComponent(p.id)}`,
+            sellerUrl: p.seller_name ? `seller-profile.html?user=${encodeURIComponent(p.seller_name)}` : (p.seller ? `seller-profile.html?user=${encodeURIComponent(p.seller)}` : ''),
           }));
           renderProductFilters();
           renderProducts();
@@ -1483,6 +1565,26 @@ if (navigator.geolocation) {
     { timeout: 4000 }
   );
 }
+
+async function validateAuthState() {
+  const token = localStorage.getItem('jwt_access');
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_BASE_URL}/me/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error('invalid');
+  } catch (err) {
+    ['jwt_access', 'jwt_refresh', 'user_role', 'user_name'].forEach(k => localStorage.removeItem(k));
+    const isAuthed = false;
+    document.querySelectorAll('.auth-only').forEach(el => {
+      el.classList.toggle('hidden', !isAuthed);
+    });
+    const banner = document.getElementById('login-banner');
+    if (banner) banner.classList.toggle('hidden', isAuthed);
+  }
+}
+
 
 
 

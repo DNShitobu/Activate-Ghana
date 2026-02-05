@@ -2,7 +2,7 @@ import os
 from django.contrib.auth import get_user_model
 from django.db import models
 from rest_framework import status, viewsets, mixins
-from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.decorators import api_view, permission_classes, action, throttle_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -16,6 +16,8 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from django.core.files.storage import default_storage
 from django.utils import timezone
+from django.shortcuts import redirect
+import requests
 
 from .models import (
     Job,
@@ -52,6 +54,7 @@ from .serializers import (
     ChatThreadSerializer,
     ChatMessageSerializer,
 )
+from .throttles import LoginThrottle, SignupThrottle, PasswordResetThrottle, OAuthThrottle
 
 User = get_user_model()
 token_signer = TimestampSigner()
@@ -91,6 +94,7 @@ def health(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([SignupThrottle])
 def signup(request):
     serializer = SignupSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -117,6 +121,7 @@ def signup(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([LoginThrottle])
 def login(request):
     serializer = LoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -132,6 +137,7 @@ def login(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([LoginThrottle])
 def admin_login(request):
     serializer = LoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -148,6 +154,7 @@ def admin_login(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([LoginThrottle])
 def admin_login_email(request):
     serializer = EmailLoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -164,6 +171,7 @@ def admin_login_email(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([LoginThrottle])
 def login_email(request):
     serializer = EmailLoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -178,6 +186,7 @@ def login_email(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([PasswordResetThrottle])
 def password_reset(request):
     email = request.data.get("email")
     if not email:
@@ -200,6 +209,7 @@ def password_reset(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([PasswordResetThrottle])
 def password_reset_confirm(request):
     uid = request.data.get("uid")
     token = request.data.get("token")
@@ -233,6 +243,13 @@ def build_frontend_link(path, params=None):
     return f"{base}/{path}{query}"
 
 
+def build_backend_link(path):
+    base = os.environ.get("BACKEND_URL", "").rstrip("/")
+    if not base:
+        base = "http://127.0.0.1:8001"
+    return f"{base}/api/{path}"
+
+
 def send_verification_email(user):
     token = token_signer.sign(f"{user.id}:{user.email}")
     verify_link = build_frontend_link("verify-email.html", {"token": token})
@@ -247,6 +264,7 @@ def send_verification_email(user):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([PasswordResetThrottle])
 def verify_email_request(request):
     email = request.data.get("email")
     if not email:
@@ -260,6 +278,7 @@ def verify_email_request(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([PasswordResetThrottle])
 def verify_email_confirm(request):
     token = request.data.get("token")
     if not token:
@@ -278,8 +297,217 @@ def verify_email_confirm(request):
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
+@throttle_classes([OAuthThrottle])
 def oauth_start(request, provider):
     return Response({"redirect": f"https://auth.example.com/{provider}/start"})
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+@throttle_classes([OAuthThrottle])
+def google_oauth_start(request):
+    client_id = os.environ.get("GOOGLE_CLIENT_ID")
+    redirect_uri = os.environ.get("GOOGLE_REDIRECT_URI") or build_backend_link("auth/oauth/google/callback")
+    if not client_id:
+        return Response({"detail": "Google OAuth not configured."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    state = token_signer.sign("google-oauth")
+    scope = "openid email profile"
+    auth_url = (
+        "https://accounts.google.com/o/oauth2/v2/auth"
+        f"?client_id={client_id}"
+        f"&redirect_uri={redirect_uri}"
+        f"&response_type=code"
+        f"&scope={scope}"
+        f"&state={state}"
+        f"&access_type=offline"
+        f"&prompt=consent"
+    )
+    return redirect(auth_url)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+@throttle_classes([OAuthThrottle])
+def google_oauth_callback(request):
+    error = request.query_params.get("error")
+    if error:
+        return Response({"detail": error}, status=status.HTTP_400_BAD_REQUEST)
+    code = request.query_params.get("code")
+    state = request.query_params.get("state")
+    if not code or not state:
+        return Response({"detail": "Invalid callback"}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        token_signer.unsign(state, max_age=600)
+    except (BadSignature, SignatureExpired):
+        return Response({"detail": "Invalid state"}, status=status.HTTP_400_BAD_REQUEST)
+
+    client_id = os.environ.get("GOOGLE_CLIENT_ID")
+    client_secret = os.environ.get("GOOGLE_CLIENT_SECRET")
+    redirect_uri = os.environ.get("GOOGLE_REDIRECT_URI") or build_backend_link("auth/oauth/google/callback")
+    if not client_id or not client_secret:
+        return Response({"detail": "Google OAuth not configured."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    token_res = requests.post(
+        "https://oauth2.googleapis.com/token",
+        data={
+            "code": code,
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "redirect_uri": redirect_uri,
+            "grant_type": "authorization_code",
+        },
+        timeout=10,
+    )
+    if token_res.status_code != 200:
+        return Response({"detail": "Token exchange failed."}, status=status.HTTP_400_BAD_REQUEST)
+    token_data = token_res.json()
+    access_token = token_data.get("access_token")
+    if not access_token:
+        return Response({"detail": "Missing access token."}, status=status.HTTP_400_BAD_REQUEST)
+
+    userinfo_res = requests.get(
+        "https://openidconnect.googleapis.com/v1/userinfo",
+        headers={"Authorization": f"Bearer {access_token}"},
+        timeout=10,
+    )
+    if userinfo_res.status_code != 200:
+        return Response({"detail": "Failed to fetch user info."}, status=status.HTTP_400_BAD_REQUEST)
+    info = userinfo_res.json()
+    email = info.get("email")
+    if not email:
+        return Response({"detail": "Email not available from Google."}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = User.objects.filter(email__iexact=email).first()
+    if not user:
+        base = email.split("@")[0]
+        username = base
+        suffix = 1
+        while User.objects.filter(username=username).exists():
+            suffix += 1
+            username = f"{base}{suffix}"
+        user = User.objects.create_user(username=username, email=email)
+        user.set_unusable_password()
+        user.save()
+    profile, _ = UserProfile.objects.get_or_create(user=user, defaults={"role": "client"})
+    profile.email_verified = bool(info.get("email_verified", True))
+    profile.save()
+
+    refresh = RefreshToken.for_user(user)
+    role = get_user_role(user)
+    redirect_url = build_frontend_link(
+        "oauth-callback.html",
+        {
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "role": role,
+            "username": user.username,
+            "email": user.email,
+        },
+    )
+    return redirect(redirect_url)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+@throttle_classes([OAuthThrottle])
+def linkedin_oauth_start(request):
+    client_id = os.environ.get("LINKEDIN_CLIENT_ID")
+    redirect_uri = os.environ.get("LINKEDIN_REDIRECT_URI") or build_backend_link("auth/oauth/linkedin/callback")
+    if not client_id:
+        return Response({"detail": "LinkedIn OAuth not configured."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    state = token_signer.sign("linkedin-oauth")
+    scope = "openid profile email"
+    auth_url = (
+        "https://www.linkedin.com/oauth/v2/authorization"
+        f"?response_type=code"
+        f"&client_id={client_id}"
+        f"&redirect_uri={redirect_uri}"
+        f"&state={state}"
+        f"&scope={scope}"
+    )
+    return redirect(auth_url)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+@throttle_classes([OAuthThrottle])
+def linkedin_oauth_callback(request):
+    error = request.query_params.get("error")
+    if error:
+        return Response({"detail": error}, status=status.HTTP_400_BAD_REQUEST)
+    code = request.query_params.get("code")
+    state = request.query_params.get("state")
+    if not code or not state:
+        return Response({"detail": "Invalid callback"}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        token_signer.unsign(state, max_age=600)
+    except (BadSignature, SignatureExpired):
+        return Response({"detail": "Invalid state"}, status=status.HTTP_400_BAD_REQUEST)
+
+    client_id = os.environ.get("LINKEDIN_CLIENT_ID")
+    client_secret = os.environ.get("LINKEDIN_CLIENT_SECRET")
+    redirect_uri = os.environ.get("LINKEDIN_REDIRECT_URI") or build_backend_link("auth/oauth/linkedin/callback")
+    if not client_id or not client_secret:
+        return Response({"detail": "LinkedIn OAuth not configured."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    token_res = requests.post(
+        "https://www.linkedin.com/oauth/v2/accessToken",
+        data={
+            "grant_type": "authorization_code",
+            "code": code,
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "redirect_uri": redirect_uri,
+        },
+        timeout=10,
+    )
+    if token_res.status_code != 200:
+        return Response({"detail": "Token exchange failed."}, status=status.HTTP_400_BAD_REQUEST)
+    token_data = token_res.json()
+    access_token = token_data.get("access_token")
+    if not access_token:
+        return Response({"detail": "Missing access token."}, status=status.HTTP_400_BAD_REQUEST)
+
+    userinfo_res = requests.get(
+        "https://api.linkedin.com/v2/userinfo",
+        headers={"Authorization": f"Bearer {access_token}"},
+        timeout=10,
+    )
+    if userinfo_res.status_code != 200:
+        return Response({"detail": "Failed to fetch user info."}, status=status.HTTP_400_BAD_REQUEST)
+    info = userinfo_res.json()
+    email = info.get("email")
+    if not email:
+        return Response({"detail": "Email not available from LinkedIn."}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = User.objects.filter(email__iexact=email).first()
+    if not user:
+        base = email.split("@")[0]
+        username = base
+        suffix = 1
+        while User.objects.filter(username=username).exists():
+            suffix += 1
+            username = f"{base}{suffix}"
+        user = User.objects.create_user(username=username, email=email)
+        user.set_unusable_password()
+        user.save()
+    profile, _ = UserProfile.objects.get_or_create(user=user, defaults={"role": "client"})
+    profile.email_verified = True
+    profile.save()
+
+    refresh = RefreshToken.for_user(user)
+    role = get_user_role(user)
+    redirect_url = build_frontend_link(
+        "oauth-callback.html",
+        {
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "role": role,
+            "username": user.username,
+            "email": user.email,
+        },
+    )
+    return redirect(redirect_url)
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])

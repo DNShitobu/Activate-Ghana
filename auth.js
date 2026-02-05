@@ -38,8 +38,21 @@ const storage = {
 function getNextPath() {
   const next = new URLSearchParams(window.location.search).get('next');
   if (!next) return null;
-  if (next.startsWith('http://') || next.startsWith('https://')) return null;
-  return next;
+  const cleaned = next.trim();
+  if (!cleaned) return null;
+  const lower = cleaned.toLowerCase();
+  if (
+    lower.startsWith('http://') ||
+    lower.startsWith('https://') ||
+    lower.startsWith('//') ||
+    lower.startsWith('javascript:') ||
+    lower.startsWith('data:') ||
+    lower.startsWith('vbscript:') ||
+    lower.includes('://')
+  ) {
+    return null;
+  }
+  return cleaned;
 }
 
 async function apiFetch(url, options = {}) {

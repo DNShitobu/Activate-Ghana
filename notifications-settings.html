@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data: https://images.unsplash.com https://unpkg.com https://*.tile.openstreetmap.org; script-src 'self' https://unpkg.com; style-src 'self' https://unpkg.com; connect-src 'self' http://127.0.0.1:8001 http://localhost:8001 https://activate-ghana-backend.onrender.com; font-src 'self' data:; form-action 'self' http://127.0.0.1:8001 http://localhost:8001 https://activate-ghana-backend.onrender.com">
   <title>Notification Settings | Skillset</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/site.css">
 </head>
 <body class="bg-slate-950 text-slate-100">
   <div class="max-w-4xl mx-auto px-4 py-8 space-y-6">
@@ -29,24 +31,18 @@
       <button id="save-prefs" class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">Save</button>
     </div>
   </div>
-  <script>
-    const API_BASE = 'http://127.0.0.1:8001';
-    const token = localStorage.getItem('jwt_access');
-    const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
-    const apiGet = (url) => fetch(API_BASE + url, { headers: authHeaders }).then(r => r.ok ? r.json() : Promise.reject());
-    const apiPatch = (url, body) => fetch(API_BASE + url, { method:'PATCH', headers:{'Content-Type':'application/json', ...authHeaders}, body: JSON.stringify(body) });
-    const emailEl = document.getElementById('email-enabled');
-    const pushEl = document.getElementById('push-enabled');
-    apiGet('/api/notification-prefs/1/').then(d => {
-      emailEl.checked = d.email_enabled;
-      pushEl.checked = d.push_enabled;
-    }).catch(()=>{});
-    document.getElementById('save-prefs').addEventListener('click', () => {
-      apiPatch('/api/notification-prefs/1/', { email_enabled: emailEl.checked, push_enabled: pushEl.checked });
-    });
-  </script>
+  <script src="config.js"></script>
+  <script src="notifications-settings.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
 
 
 

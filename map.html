@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data: https://images.unsplash.com https://unpkg.com https://*.tile.openstreetmap.org; script-src 'self' https://unpkg.com; style-src 'self' https://unpkg.com; connect-src 'self' http://127.0.0.1:8001 http://localhost:8001 https://activate-ghana-backend.onrender.com; font-src 'self' data:; form-action 'self' http://127.0.0.1:8001 http://localhost:8001 https://activate-ghana-backend.onrender.com">
   <title>Ghana Heatmap | Skillset</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <style>
-    #map { height: 70vh; }
-  </style>
 </head>
 <body class="bg-slate-950 text-slate-100">
   <div class="max-w-5xl mx-auto px-4 py-6 space-y-4">
@@ -30,38 +29,16 @@
   <footer class="max-w-5xl mx-auto px-4 pb-8 text-xs text-slate-500">
     ACTIVATE Skills and Service Marketplace | Ghana
   </footer>
-  <script>
-    if (!localStorage.getItem('jwt_access')) {
-      window.location.href = 'login.html';
-    }
-    const map = L.map('map').setView([5.6037, -0.1870], 7);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
-
-    const experts = [
-      { name: 'Ama Boateng', coords: [5.67, -0.15] },
-      { name: 'Kofi Mensah', coords: [6.69, -1.62] },
-      { name: 'Esi Quaye', coords: [5.63, -0.09] },
-    ];
-    const jobs = [
-      { title: 'Wire apartment', coords: [5.55, -0.22] },
-      { title: 'Retile bathroom', coords: [5.11, -1.25] },
-    ];
-
-    experts.forEach(e => L.marker(e.coords, { icon: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/190/190411.png', iconSize: [24,24] })}).addTo(map).bindPopup(e.name));
-    jobs.forEach(j => L.marker(j.coords, { icon: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/190/1904116.png', iconSize: [24,24] })}).addTo(map).bindPopup(j.title));
-
-    document.getElementById('near-me').addEventListener('click', () => {
-      if (!navigator.geolocation) return alert('Geolocation not supported');
-      navigator.geolocation.getCurrentPosition(pos => {
-        map.setView([pos.coords.latitude, pos.coords.longitude], 12);
-        L.circle([pos.coords.latitude, pos.coords.longitude], { radius: 5000, color: 'blue' }).addTo(map);
-      });
-    });
-  </script>
+  <script src="map.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
 
 
 

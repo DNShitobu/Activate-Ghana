@@ -36,6 +36,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "skillset.middleware.ContentSecurityPolicyMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -115,6 +116,21 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+X_FRAME_OPTIONS = "DENY"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
+SECURE_CROSS_ORIGIN_RESOURCE_POLICY = "same-site"
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
 
 if USE_S3 and HAS_STORAGES:
     AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
@@ -137,7 +153,36 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
+    "DEFAULT_THROTTLE_RATES": {
+        "login": "5/min",
+        "signup": "5/min",
+        "password_reset": "3/min",
+        "oauth": "10/min",
+    },
 }
 
 # CORS (dev): allow all origins so frontend on 8000 can call API on 8001
 CORS_ALLOW_ALL_ORIGINS = DEBUG
+
+# Basic cache for throttling (in-memory for dev/demo)
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "activate-skillset-cache",
+    }
+}
+
+# Content Security Policy (applies to API responses; static frontend uses meta tags)
+DEFAULT_CSP = (
+    "default-src 'self'; "
+    "base-uri 'self'; "
+    "object-src 'none'; "
+    "frame-ancestors 'none'; "
+    "img-src 'self' data: https://images.unsplash.com https://unpkg.com https://*.tile.openstreetmap.org; "
+    "script-src 'self' https://unpkg.com; "
+    "style-src 'self' https://unpkg.com; "
+    "connect-src 'self' http://127.0.0.1:8001 http://localhost:8001 https://activate-ghana-backend.onrender.com; "
+    "font-src 'self' data:; "
+    "form-action 'self' http://127.0.0.1:8001 http://localhost:8001 https://activate-ghana-backend.onrender.com"
+)
+CSP_POLICY = os.environ.get("CSP_POLICY", DEFAULT_CSP)

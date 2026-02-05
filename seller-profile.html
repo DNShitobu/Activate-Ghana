@@ -3,25 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data: https://images.unsplash.com https://unpkg.com https://*.tile.openstreetmap.org; script-src 'self' https://unpkg.com; style-src 'self' https://unpkg.com; connect-src 'self' http://127.0.0.1:8001 http://localhost:8001 https://activate-ghana-backend.onrender.com; font-src 'self' data:; form-action 'self' http://127.0.0.1:8001 http://localhost:8001 https://activate-ghana-backend.onrender.com">
   <title>Seller Profile | ACTIVATE Skills and Service Marketplace | Ghana</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: { DEFAULT: '#F68B1F', light: '#F6B01E', dark: '#F55203' },
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    body { background: #f8fafc; color: #0f172a; }
-    .card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(15,23,42,0.08); }
-  </style>
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/site.css">
 </head>
-<body class="antialiased">
+<body class="antialiased theme-light">
   <div class="max-w-5xl mx-auto px-4 py-8 space-y-6">
     <header class="flex items-center justify-between">
   <a href="products.html" class="text-sm text-primary hover:underline">Back to products</a>
@@ -46,9 +33,16 @@
   <footer class="max-w-5xl mx-auto px-4 pb-8 text-xs text-slate-500">
     ACTIVATE Skills and Service Marketplace | Ghana
   </footer>
-  <script src="config.js"></script>`r`n  <script src="scripts.js"></script>
+  <script src="config.js"></script>
+  <script src="scripts.js"></script>
 </body>
 </html>
+
+
+
+
+
+
 
 
 

@@ -1,0 +1,11 @@
+{
+  "name": "activate-ghana-frontend",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i ./assets/tailwind-input.css -o ./assets/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./assets/tailwind-input.css -o ./assets/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.13"
+  }
+}
