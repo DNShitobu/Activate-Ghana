@@ -493,7 +493,7 @@ let heroSlides = [
   { title: 'Poultry & farm services', text: 'Sell eggs, live birds, and services directly to buyers.', image: 'images/1-IMG_6479.jpg' },
   { title: 'Agro inputs marketplace', text: 'Fertilizer, pesticide, and farm supplies from verified sellers.', image: 'images/2-IMG_6478.jpg' },
   { title: 'Nursery & cashew experts', text: 'Seedlings, grafting, and orchard setup by trained experts.', image: 'images/3-IMG_6477.jpg' },
-  { title: 'Skilled services on demand', text: 'Electricians, plumbers, and artisans with escrow protection.', image: 'images/4-IMG_6476.jpg' },
+  { title: 'Skilled services on demand', text: 'Chief incubator officer with escrow protection', image: 'images/4-IMG_6476.jpg' },
 ];
 
 // Helpers
