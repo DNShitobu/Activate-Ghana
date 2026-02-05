@@ -44,6 +44,14 @@
         <div class="relative h-72 lg:h-96" id="top-slides">
           <!-- slides injected by JS -->
         </div>
+        <button type="button" id="top-prev" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-slate-700 shadow border border-white/60 flex items-center justify-center">
+          <span aria-hidden="true">&#8592;</span>
+          <span class="sr-only">Previous slide</span>
+        </button>
+        <button type="button" id="top-next" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-slate-700 shadow border border-white/60 flex items-center justify-center">
+          <span aria-hidden="true">&#8594;</span>
+          <span class="sr-only">Next slide</span>
+        </button>
         <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2" id="top-dots"></div>
         <div class="absolute top-4 left-4 right-4 flex justify-between items-center text-sm text-slate-700">
           <span class="px-3 py-1 rounded-full border border-slate-200 bg-slate-100">Skilled work in Ghana</span>
@@ -89,21 +97,27 @@
       </div>
       <div class="lg:col-span-5 space-y-4">
         <div class="card rounded-3xl overflow-hidden glow-ring relative">
-          <img src="images/IMG_6829.jpg" alt="Skilled graduate on site" class="w-full h-72 lg:h-80 object-cover">
+          <div class="w-full h-72 lg:h-80 flex items-center justify-center bg-slate-900/10">
+            <img src="images/Agric mechanic.jpeg" alt="Skilled graduate on site" class="max-w-full max-h-full object-contain">
+          </div>
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20"></div>
           <div class="absolute bottom-4 left-4 right-4 space-y-1">
-            <p class="text-sm text-slate-700">Accra - On-site metalwork completed with escrow protection and milestone approvals.</p>
-            <p class="text-xl font-semibold">See the pros at work</p>
+            <p class="text-sm text-white">On-site Agric Mechanic completed with escrow protection and milestone approvals.</p>
+            <p class="text-xl font-semibold text-white">See the pros at work</p>
           </div>
         </div>
         <div class="grid sm:grid-cols-2 gap-3">
           <figure class="card rounded-2xl overflow-hidden">
-            <img src="images/IMG_6830.jpg" alt="Tailor working on uniforms" class="w-full h-36 object-cover">
-            <figcaption class="p-3 text-sm text-slate-700">Bulk uniforms tailored in Tema with clear delivery dates.</figcaption>
+            <div class="w-full h-36 flex items-center justify-center bg-slate-900/10">
+              <img src="images/IMG_6830.jpg" alt="Tailor working on uniforms" class="max-w-full max-h-full object-contain">
+            </div>
+            <figcaption class="p-3 text-sm text-slate-700">Poultry farmer feeding birds.</figcaption>
           </figure>
           <figure class="card rounded-2xl overflow-hidden">
-            <img src="images/IMG_6831.jpg" alt="Mechanic servicing a vehicle" class="w-full h-36 object-cover">
-            <figcaption class="p-3 text-sm text-slate-700">Fleet maintenance in Kumasi with transparent quotes.</figcaption>
+            <div class="w-full h-36 flex items-center justify-center bg-slate-900/10">
+              <img src="images/food processor (1).jpeg" alt="Mechanic servicing a vehicle" class="max-w-full max-h-full object-contain">
+            </div>
+            <figcaption class="p-3 text-sm text-slate-700">Food processor in a processing facility in Tamale.</figcaption>
           </figure>
         </div>
       </div>

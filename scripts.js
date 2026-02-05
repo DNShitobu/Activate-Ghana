@@ -1,15 +1,15 @@
 // Data
 let categoryData = [
-  { name: 'Electricians', description: 'Solar, wiring, backup power, repairs', color: '#F68B1F', image: 'images/IMG_6251.jpg' },
-  { name: 'Plumbers', description: 'Fix leaks, bathrooms, borehole hookups', color: '#F6B01E', image: 'images/IMG_6266.jpg' },
+  //{ name: 'Electricians', description: 'Solar, wiring, backup power, repairs', color: '#F68B1F', image: 'images/IMG_6251.jpg' },
+  //{ name: 'Plumbers', description: 'Fix leaks, bathrooms, borehole hookups', color: '#F6B01E', image: 'images/IMG_6266.jpg' },
   { name: 'Poultry & Livestock', description: 'Live birds, eggs, meat, feed plans', color: '#F68B1F', image: 'images/IMG_6280.jpg' },
-  { name: 'Agro Inputs', description: 'Fertilizer, pesticide, herbicide supply', color: '#F6B01E', image: 'images/IMG_6283.jpg' },
-  { name: 'Nursery & Cashew', description: 'Seedlings, grafting, orchard setup', color: '#F55203', image: 'images/IMG_6319.jpg' },
+  { name: 'Agro Inputs', description: 'Fertilizer, pesticide, herbicide supply', color: '#F6B01E', image: 'images/Agro_Inputs.jpg' },
+  { name: 'Nursery & Cashew', description: 'Seedlings, grafting, orchard setup', color: '#F55203', image: 'images/Nursery_bed.jpg' },
   { name: 'Mechanics', description: 'Auto diagnostics, fleet maintenance', color: '#F55203', image: 'images/IMG_6320.jpg' },
-  { name: 'Carpenters', description: 'Doors, roofing, cabinetry, fit-out', color: '#F68B1F', image: 'images/IMG_6335.jpg' },
-  { name: 'Tailors', description: 'Uniforms, occasion wear, alterations', color: '#F6B01E', image: 'images/IMG_6732.jpg' },
-  { name: 'Welders', description: 'Gates, windows, structural frames', color: '#F55203', image: 'images/IMG_6736.jpg' },
-  { name: 'Masons', description: 'Block work, tiling, concrete, finishing', color: '#F68B1F', image: 'images/IMG_6738.jpg' },
+ //{ name: 'Carpenters', description: 'Doors, roofing, cabinetry, fit-out', color: '#F68B1F', image: 'images/IMG_6335.jpg' },
+  //{ name: 'Tailors', description: 'Uniforms, occasion wear, alterations', color: '#F6B01E', image: 'images/IMG_6732.jpg' },
+  //{ name: 'Welders', description: 'Gates, windows, structural frames', color: '#F55203', image: 'images/IMG_6736.jpg' },
+  //{ name: 'Masons', description: 'Block work, tiling, concrete, finishing', color: '#F68B1F', image: 'images/IMG_6738.jpg' },
 ];
 
 const USE_API = new URLSearchParams(window.location.search).get('data') === 'live';
@@ -1225,11 +1225,13 @@ function renderReviews() {
 function initCarousel() {
   const slidesContainer = document.getElementById('top-slides');
   const dotsContainer = document.getElementById('top-dots');
+  const prevBtn = document.getElementById('top-prev');
+  const nextBtn = document.getElementById('top-next');
   if (!slidesContainer || !dotsContainer) return;
 
   slidesContainer.innerHTML = heroSlides.map((slide, idx) => `
-    <div class="absolute inset-0 opacity-0 transition-opacity duration-700 ${idx === 0 ? 'opacity-100' : 'pointer-events-none'}" data-slide-index="${idx}" aria-hidden="${idx === 0 ? 'false' : 'true'}">
-      <img src="${safeUrl(slide.image)}" alt="${escapeHtml(slide.title)}" class="w-full h-full object-cover" loading="lazy">
+    <div class="absolute inset-0 opacity-0 transition-opacity duration-700 flex items-center justify-center ${idx === 0 ? 'opacity-100' : 'pointer-events-none'}" data-slide-index="${idx}" aria-hidden="${idx === 0 ? 'false' : 'true'}">
+      <img src="${safeUrl(slide.image)}" alt="${escapeHtml(slide.title)}" class="max-w-full max-h-full object-contain bg-slate-900/10" loading="lazy">
       <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20"></div>
       <div class="absolute bottom-5 left-5 right-5 space-y-2">
         <p class="text-sm text-slate-200">${escapeHtml(slide.text)}</p>
@@ -1256,14 +1258,43 @@ function initCarousel() {
       btn.classList.toggle('!bg-white', i === idx);
     });
   };
+  let autoTimer = null;
+  const startAuto = () => {
+    if (document.body.dataset.lite === "1" || autoTimer) return;
+    autoTimer = setInterval(() => update((current + 1) % heroSlides.length), 3000);
+  };
+  const stopAuto = () => {
+    if (!autoTimer) return;
+    clearInterval(autoTimer);
+    autoTimer = null;
+  };
+
   dotsContainer.addEventListener('click', (e) => {
     if (e.target.dataset.idx !== undefined) {
+      stopAuto();
       update(Number(e.target.dataset.idx));
     }
   });
-  if (document.body.dataset.lite !== "1") {
-    setInterval(() => update((current + 1) % heroSlides.length), 5000);
-  }
+
+  const goNext = () => {
+    stopAuto();
+    update((current + 1) % heroSlides.length);
+  };
+  const goPrev = () => {
+    stopAuto();
+    update((current - 1 + heroSlides.length) % heroSlides.length);
+  };
+  prevBtn?.addEventListener('click', goPrev);
+  nextBtn?.addEventListener('click', goNext);
+
+  const carouselRoot = slidesContainer.parentElement || slidesContainer;
+  carouselRoot.addEventListener('mouseenter', stopAuto);
+  carouselRoot.addEventListener('mouseleave', startAuto);
+  carouselRoot.addEventListener('focusin', stopAuto);
+  carouselRoot.addEventListener('focusout', startAuto);
+
+  update(0);
+  startAuto();
 }
 
 // Event wiring
